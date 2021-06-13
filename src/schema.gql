@@ -1,0 +1,15 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Manga {
+  """Manga Id"""
+  id: Int!
+
+  """Description of the Manga"""
+  description: String!
+}
+
+type Query {
+  manga(id: Int!): Manga!
+}

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
+import { MangaModule } from './manga/manga.module';
+import { ScrapperModule } from './scrapper/scrapper.module';
 
 @Module({
   imports: [
@@ -9,6 +11,8 @@ import { join } from 'path';
       introspection: true,
       playground: true,
     }),
+    MangaModule,
+    ScrapperModule,
   ],
   controllers: [],
   providers: [],
