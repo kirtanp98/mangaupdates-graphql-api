@@ -23,12 +23,25 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
       waitUntil: 'networkidle0',
     });
 
-    const value = await page.$eval(
-      '.sContent',
-      (el: HTMLElement) => el.innerText,
-    );
+    // const value = await page.$eval(
+    //   '.sContent',
+    //   (el: HTMLElement) => el.innerText,
+    // );
     manga.id = id;
-    manga.description = value;
+
+    try {
+      await page.click('u > b');
+    } catch (e) {
+      console.log(e);
+    }
+
+    const data = await page.evaluate(() => {
+      // releasestitle tabletitle
+      return (document.querySelector('.sContent') as HTMLElement).innerText;
+    });
+
+    manga.description = data;
+
     page.close();
     return manga;
   }
