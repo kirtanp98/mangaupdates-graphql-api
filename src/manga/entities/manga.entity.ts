@@ -8,6 +8,30 @@ import {
 import { Period, MangaGenre, MangaStatus, MangaType } from './type.enum';
 
 @ObjectType()
+export class ForumStats {
+  @Field(() => Int, { description: 'Number of topics on the forum' })
+  topics: number;
+
+  @Field(() => Int, { description: 'Number of posts on the forum' })
+  posts: number;
+}
+
+@ObjectType()
+export class MangaRatings {
+  @Field(() => Int, { description: 'Votes' })
+  votes: number;
+
+  @Field(() => Float, { description: 'Average rating of the manga' })
+  average: number;
+
+  @Field(() => Float, { description: 'Bayesian average rating of the manga' })
+  bayesianAverage: number;
+
+  @Field(() => Int, { description: 'Rating distribution from 10 to 0' })
+  distribution: number[];
+}
+
+@ObjectType()
 export class Manga {
   @Field(() => Int, { description: 'Manga Id' })
   id: number;
@@ -24,13 +48,17 @@ export class Manga {
   @Field(() => [MangaRelation], { description: 'Related manga' })
   related: MangaRelation[];
 
-  @Field({ description: 'Name of the manga, often in other languages' })
+  @Field(() => [String], {
+    description: 'Name of the manga, often in other languages',
+  })
   associatedName: string[];
 
-  @Field({ description: 'Scanlations groups that have releases for the manga' })
+  @Field(() => [String], {
+    description: 'Scanlations groups that have releases for the manga',
+  })
   groups: string[]; //will be replaced with group data when the endpoint exists
 
-  @Field({ description: 'Latest releases for the manga' })
+  @Field(() => [String], { description: 'Latest releases for the manga' })
   releases: string[]; //will be improved on later on, too much work for me right now
 
   @Field(() => MangaStatus, { description: 'Status of the manga' })
@@ -39,13 +67,13 @@ export class Manga {
   @Field({ description: 'If the manga is completly scanlated' })
   scanlated: boolean;
 
-  @Field({
+  @Field(() => [String], {
     description:
       'Which chapters the anime, if the manga has one otherwise empty, starts and ends',
   })
   animeChapters: string[];
 
-  @Field({ description: 'User reviews of the manga' })
+  @Field(() => [String], { description: 'User reviews of the manga' })
   userReviews: string[]; //this will get improved on whenever I get to users/forums
 
   @Field(() => ForumStats, { description: 'Forum stats of the manga' })
@@ -68,19 +96,21 @@ export class Manga {
   @Field(() => [MangaGenre], { description: 'Genres of the manga' })
   genres: MangaGenre[];
 
-  @Field({ description: 'Categories of the manga' })
+  @Field(() => [String], { description: 'Categories of the manga' })
   categories: string[];
 
-  @Field({ description: 'Categories recommendations for the manga' })
+  @Field(() => [String], {
+    description: 'Categories recommendations for the manga',
+  })
   categoriesRecommendations: string[]; //improvement coming later
 
-  @Field({ description: 'Recommendations for the manga' })
+  @Field(() => [String], { description: 'Recommendations for the manga' })
   recommendations: string[]; //improvement coming later
 
-  @Field({ description: 'Authors for the manga' })
+  @Field(() => [String], { description: 'Authors for the manga' })
   authors: string[]; //improvement coming later
 
-  @Field({ description: 'Artist for the manga' })
+  @Field(() => [String], { description: 'Artist for the manga' })
   artist: string[]; //improvement coming later
 
   @Field(() => Int, { description: 'Year of release' })
@@ -116,30 +146,6 @@ export class MangaRelation {
 
   // @Field(() => Manga, { description: 'Related Manga' })
   // type: Manga;
-}
-
-@ObjectType()
-export class ForumStats {
-  @Field(() => Int, { description: 'Number of topics on the forum' })
-  topics: number;
-
-  @Field(() => Int, { description: 'Number of posts on the forum' })
-  posts: number;
-}
-
-@ObjectType()
-export class MangaRatings {
-  @Field(() => Int, { description: 'Votes' })
-  votes: number;
-
-  @Field(() => Float, { description: 'Average rating of the manga' })
-  average: number;
-
-  @Field(() => Float, { description: 'Bayesian average rating of the manga' })
-  bayesianAverage: number;
-
-  @Field(() => Int, { description: 'Rating distribution from 10 to 0' })
-  distribution: number[];
 }
 
 @ObjectType()

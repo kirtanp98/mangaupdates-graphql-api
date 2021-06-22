@@ -73,21 +73,21 @@ export enum Period {
 }
 
 registerEnumType(MangaType, {
-  name: 'Manga Type',
+  name: 'MangaType',
   description: 'Type of the manga',
 });
 
 registerEnumType(MangaGenre, {
-  name: 'Manga Genre',
+  name: 'MangaGenre',
   description: 'Genre of the manga',
 });
 
 registerEnumType(MangaStatus, {
-  name: 'Manga Status',
+  name: 'MangaStatus',
   description: 'Status of the manga',
 });
 
 registerEnumType(Period, {
-  name: 'Activity Stats',
+  name: 'ActivityStats',
   description: 'Activity Stats of the manga',
 });

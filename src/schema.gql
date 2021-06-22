@@ -2,12 +2,222 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ForumStats {
+  """Number of topics on the forum"""
+  topics: Int!
+
+  """Number of posts on the forum"""
+  posts: Int!
+}
+
+type MangaRatings {
+  """Votes"""
+  votes: Int!
+
+  """Average rating of the manga"""
+  average: Float!
+
+  """Bayesian average rating of the manga"""
+  bayesianAverage: Float!
+
+  """Rating distribution from 10 to 0"""
+  distribution: Int!
+}
+
 type Manga {
   """Manga Id"""
   id: Int!
 
-  """Description of the Manga"""
+  """Title of the manga"""
+  title: String!
+
+  """Description of the manga"""
   description: String!
+
+  """Type of the manga"""
+  type: MangaType!
+
+  """Related manga"""
+  related: [MangaRelation!]!
+
+  """Name of the manga, often in other languages"""
+  associatedName: [String!]!
+
+  """Scanlations groups that have releases for the manga"""
+  groups: [String!]!
+
+  """Latest releases for the manga"""
+  releases: [String!]!
+
+  """Status of the manga"""
+  status: MangaStatus!
+
+  """If the manga is completly scanlated"""
+  scanlated: Boolean!
+
+  """
+  Which chapters the anime, if the manga has one otherwise empty, starts and ends
+  """
+  animeChapters: [String!]!
+
+  """User reviews of the manga"""
+  userReviews: [String!]!
+
+  """Forum stats of the manga"""
+  forumStats: ForumStats!
+
+  """User ratings of the manga"""
+  ratings: MangaRatings!
+
+  """Last time the page was updated"""
+  lastUpdated: DateTime!
+
+  """URL of the cover image from the manga"""
+  image: String
+
+  """Genres of the manga"""
+  genres: [MangaGenre!]!
+
+  """Categories of the manga"""
+  categories: [String!]!
+
+  """Categories recommendations for the manga"""
+  categoriesRecommendations: [String!]!
+
+  """Recommendations for the manga"""
+  recommendations: [String!]!
+
+  """Authors for the manga"""
+  authors: [String!]!
+
+  """Artist for the manga"""
+  artist: [String!]!
+
+  """Year of release"""
+  year: Int!
+
+  """Original publisher of the manga"""
+  originalPublisher: String!
+
+  """Where the manga was serialized"""
+  serializedMagazine: String!
+
+  """Is the manga licensed in english"""
+  licensed: Boolean!
+
+  """English publisher of the manga"""
+  englishPublisher: String!
+
+  """User activity stats of the manga"""
+  activityStats: [ActivityStat!]!
+
+  """List stats of the manga"""
+  listStats: [ListStat!]!
+}
+
+"""Type of the manga"""
+enum MangaType {
+  Artbook
+  Doujinshi
+  DramaCD
+  Filipino
+  Indonesian
+  Manga
+  Manhwa
+  Manhua
+  Novel
+  OEL
+  Thai
+  Vietnamese
+  Malaysian
+  Nordic
+  French
+  Spanish
+}
+
+"""Status of the manga"""
+enum MangaStatus {
+  Ongoing
+  Hiatus
+  Complete
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Genre of the manga"""
+enum MangaGenre {
+  Action
+  Adult
+  Adventure
+  Comedy
+  Doujinshi
+  Drama
+  Ecchi
+  Fantasy
+  GenderBender
+  Harem
+  Hentai
+  Historical
+  Horror
+  Josei
+  Lolicon
+  MartialArts
+  Mature
+  Mecha
+  Mystery
+  Psychological
+  Romance
+  SchoolLife
+  Scifi
+  Seinen
+  Shotacon
+  Shoujo
+  ShoujoAi
+  Shounen
+  ShounenAi
+  SliceofLife
+  Smut
+  Sports
+  Supernatural
+  Tragedy
+  Yaoi
+  Yuri
+}
+
+type MangaRelation {
+  """Relationship of the manga towards the parent manga"""
+  relationship: String!
+}
+
+type ActivityStat {
+  """Period of time"""
+  dateRange: ActivityStats!
+
+  """Position of the manga"""
+  position: Int!
+
+  """Position change of the manga"""
+  change: Int!
+}
+
+"""Activity Stats of the manga"""
+enum ActivityStats {
+  Weekly
+  Monthly
+  ThreeMonths
+  SixMonths
+  Year
+}
+
+type ListStat {
+  """List"""
+  list: String!
+
+  """Number of times the manga appears on a list"""
+  amount: Int!
 }
 
 type Query {
