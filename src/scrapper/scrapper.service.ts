@@ -15,7 +15,7 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     await this.browser.close();
   }
 
-  async getManga(id: number): Promise<Manga> {
+  async getManga(id: number): Promise<Manga | null> {
     const manga = new Manga();
 
     const page = await this.browser.newPage();
@@ -32,16 +32,21 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     try {
       await page.click('u > b');
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     const data = await page.evaluate(() => {
       // releasestitle tabletitle
-      return (document.querySelector('.sContent') as HTMLElement).innerText;
+
+      // const content = Array.from(document.querySelectorAll('.sContent'));
+      // const test = content.map((element) => (element as HTMLElement).innerText);
+      return {
+        description: (document.querySelector('.sContent') as HTMLElement).innerText,
+        content: content,
+      };
     });
 
-    manga.description = data;
-
+    manga.description = data.description;
     page.close();
     return manga;
   }
