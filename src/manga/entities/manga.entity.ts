@@ -5,7 +5,13 @@ import {
   Float,
   GraphQLISODateTime,
 } from '@nestjs/graphql';
-import { Period, MangaGenre, MangaStatus, MangaType } from './type.enum';
+import {
+  Period,
+  MangaGenre,
+  MangaStatus,
+  MangaType,
+  RelatedType,
+} from './type.enum';
 
 @ObjectType()
 export class ForumStats {
@@ -144,6 +150,12 @@ export class MangaRelation {
   @Field({ description: 'Relationship of the manga towards the parent manga' })
   relationship: string;
 
+  @Field({ description: 'Name of the manga' })
+  name: string;
+
+  @Field(() => RelatedType, { description: 'Type of related manga' })
+  type: RelatedType;
+  
   // @Field(() => Manga, { description: 'Related Manga' })
   // type: Manga;
 }

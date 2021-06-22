@@ -72,6 +72,12 @@ export enum Period {
   Year = 'Year',
 }
 
+export enum RelatedType {
+  SpinOff = 'Sping-Off',
+  SideStory = 'Side Story',
+  Alternative = 'Alternate Story',
+}
+
 registerEnumType(MangaType, {
   name: 'MangaType',
   description: 'Type of the manga',
@@ -91,3 +97,8 @@ registerEnumType(Period, {
   name: 'ActivityStats',
   description: 'Activity Stats of the manga',
 });
+
+registerEnumType(RelatedType, {
+  name: 'RelatedMangaType',
+  description: 'Type of related series of the manga',
+})
