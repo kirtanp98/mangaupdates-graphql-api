@@ -46,7 +46,11 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     try {
       data = await page.evaluate(() => {
         // releasestitle tabletitle
-
+        document.querySelectorAll('u > b').forEach((v: HTMLElement) => {
+          if (v.innerText == 'M') {
+            v.click();
+          }
+        });
         //title
         const title = (
           document.querySelector('.releasestitle.tabletitle') as HTMLElement
@@ -67,7 +71,7 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           .split('\n')
           .map((v) => v.split(' ('))
           .map((t) => {
-            const type = t[t.length-1]; //.slice(0, -1);
+            const type = t[t.length - 1]; //.slice(0, -1);
             return { name: t[0], type: type };
           });
 
@@ -87,6 +91,11 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
         const associatedName = content[3].innerText.split('\n');
         associatedName.pop();
 
+        //img of the manga
+        const image = document.querySelector('.sContent > center > img');
+        const imgUrl: string | null =
+          image != null ? (image as HTMLImageElement).src : null;
+
         return {
           title: title,
           description: content[0].innerText,
@@ -94,13 +103,12 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           names: associatedName,
           content: test,
           relations: mangaRelations,
+          img: imgUrl,
         };
       });
     } catch (e) {
       console.error(e);
     }
-
-    console.log(data);
 
     if (!data) {
       page.close();
@@ -109,9 +117,10 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
 
     manga.title = data.title;
     manga.description = data.description;
+    manga.image = data.img;
     manga.type = <MangaType>data.type; //bad code
     manga.associatedName = data.names;
-    manga.related = data.relations.map(value => {
+    manga.related = data.relations.map((value) => {
       const r = new MangaRelation();
       r.name = value.name;
       r.id = this.getIdfromURL(value.id);
