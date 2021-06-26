@@ -147,15 +147,17 @@ export class Manga {
 
 @ObjectType()
 export class MangaRelation {
-  @Field({ description: 'Relationship of the manga towards the parent manga' })
-  relationship: string;
+  @Field(() => Int, { description: 'id of the manga' })
+  id: number;
 
   @Field({ description: 'Name of the manga' })
   name: string;
 
-  @Field(() => RelatedType, { description: 'Type of related manga' })
+  @Field(() => RelatedType, {
+    description: 'Relationship of the manga towards the parent manga',
+  })
   type: RelatedType;
-  
+
   // @Field(() => Manga, { description: 'Related Manga' })
   // type: Manga;
 }

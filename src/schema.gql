@@ -188,8 +188,21 @@ enum MangaGenre {
 }
 
 type MangaRelation {
+  """id of the manga"""
+  id: Int!
+
+  """Name of the manga"""
+  name: String!
+
   """Relationship of the manga towards the parent manga"""
-  relationship: String!
+  type: RelatedMangaType!
+}
+
+"""Type of related series of the manga"""
+enum RelatedMangaType {
+  SpinOff
+  SideStory
+  Alternative
 }
 
 type ActivityStat {

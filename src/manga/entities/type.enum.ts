@@ -73,7 +73,7 @@ export enum Period {
 }
 
 export enum RelatedType {
-  SpinOff = 'Sping-Off',
+  SpinOff = 'Spin-Off',
   SideStory = 'Side Story',
   Alternative = 'Alternate Story',
 }
