@@ -1,8 +1,16 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { Browser } from 'puppeteer';
-import { Manga, MangaRelation } from 'src/manga/entities/manga.entity';
-import { MangaType, RelatedType } from 'src/manga/entities/type.enum';
+import {
+  GroupData,
+  Manga,
+  MangaRelation,
+} from 'src/manga/entities/manga.entity';
+import {
+  MangaStatus,
+  MangaType,
+  RelatedType,
+} from 'src/manga/entities/type.enum';
 import MangaUpdatesEndpoint from 'src/shared/MangaUpdates';
 
 @Injectable()
@@ -96,6 +104,29 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
         const imgUrl: string | null =
           image != null ? (image as HTMLImageElement).src : null;
 
+        //groups
+        const groupdoms = [...content[4].querySelectorAll('a')];
+        const groupName = groupdoms.map(
+          (element: HTMLElement) => element.innerText,
+        );
+        groupName.pop();
+
+        const groupId = groupdoms.map((element) => {
+          return element.href;
+        });
+
+        groupId.pop();
+
+        // latest releases
+        const releases = content[5].innerText.split('\n');
+        releases.pop();
+
+        // status
+        const status = content[6].innerText;
+
+        //scanlated
+        const scanned = content[7].innerText;
+
         return {
           title: title,
           description: content[0].innerText,
@@ -104,6 +135,11 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           content: test,
           relations: mangaRelations,
           img: imgUrl,
+          groupName: groupName,
+          groupid: groupId,
+          releases: releases,
+          status: status,
+          scanned: scanned,
         };
       });
     } catch (e) {
@@ -128,6 +164,23 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
       return r;
     });
 
+    const groups: GroupData[] = [];
+    for (let x = 0; x < data.groupName.length; x++) {
+      const g = new GroupData();
+      g.name = data.groupName[x];
+      if (this.doesUrlHaveId(data.groupid[x])) {
+        g.id = this.getIdfromURL(data.groupid[x]);
+      } else {
+        g.id = null;
+      }
+      groups.push(g);
+    }
+
+    manga.groups = groups;
+    manga.releases = data.releases;
+    manga.status = this.stringToStatus(data.status);
+    manga.fullyScanlated = this.yesOrNo(data.scanned);
+
     page.close();
     return manga;
   }
@@ -151,5 +204,32 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
 
   private getIdfromURL(url: string): number {
     return Number.parseInt(url.split('=')[1]);
+  }
+
+  private doesUrlHaveId(url: string): boolean {
+    return url.includes('id');
+  }
+
+  private stringToStatus(status: string): MangaStatus {
+    if (status.includes('Ongoing')) {
+      return MangaStatus.Ongoing;
+    }
+
+    if (status.includes('Hiatus')) {
+      return MangaStatus.Hiatus;
+    }
+
+    if (status.includes('Complete')) {
+      return MangaStatus.Complete;
+    }
+
+    return MangaStatus.Unknown;
+  }
+
+  private yesOrNo(s: string): boolean {
+    if (s === 'No') {
+      return false;
+    }
+    return true;
   }
 }

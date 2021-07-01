@@ -59,10 +59,10 @@ export class Manga {
   })
   associatedName: string[];
 
-  @Field(() => [String], {
+  @Field(() => [GroupData], {
     description: 'Scanlations groups that have releases for the manga',
   })
-  groups: string[]; //will be replaced with group data when the endpoint exists
+  groups: GroupData[]; //will be replaced with group data when the endpoint exists
 
   @Field(() => [String], { description: 'Latest releases for the manga' })
   releases: string[]; //will be improved on later on, too much work for me right now
@@ -71,7 +71,7 @@ export class Manga {
   status: MangaStatus;
 
   @Field({ description: 'If the manga is completly scanlated' })
-  scanlated: boolean;
+  fullyScanlated: boolean;
 
   @Field(() => [String], {
     description:
@@ -160,6 +160,15 @@ export class MangaRelation {
 
   // @Field(() => Manga, { description: 'Related Manga' })
   // type: Manga;
+}
+
+@ObjectType()
+export class GroupData {
+  @Field(() => Int, { description: 'id of the group', nullable: true })
+  id?: number;
+
+  @Field({ description: 'Name of the group' })
+  name: string;
 }
 
 @ObjectType()

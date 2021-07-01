@@ -44,7 +44,7 @@ type Manga {
   associatedName: [String!]!
 
   """Scanlations groups that have releases for the manga"""
-  groups: [String!]!
+  groups: [GroupData!]!
 
   """Latest releases for the manga"""
   releases: [String!]!
@@ -53,7 +53,7 @@ type Manga {
   status: MangaStatus!
 
   """If the manga is completly scanlated"""
-  scanlated: Boolean!
+  fullyScanlated: Boolean!
 
   """
   Which chapters the anime, if the manga has one otherwise empty, starts and ends
@@ -140,6 +140,7 @@ enum MangaStatus {
   Ongoing
   Hiatus
   Complete
+  Unknown
 }
 
 """
@@ -203,6 +204,14 @@ enum RelatedMangaType {
   SpinOff
   SideStory
   Alternative
+}
+
+type GroupData {
+  """id of the group"""
+  id: Int
+
+  """Name of the group"""
+  name: String!
 }
 
 type ActivityStat {

@@ -62,6 +62,7 @@ export enum MangaStatus {
   Ongoing = 'Ongoing',
   Hiatus = 'Hiatus',
   Complete = 'Complete',
+  Unknown = 'Unknown',
 }
 
 export enum Period {
