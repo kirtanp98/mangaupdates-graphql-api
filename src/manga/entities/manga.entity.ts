@@ -33,7 +33,7 @@ export class MangaRatings {
   @Field(() => Float, { description: 'Bayesian average rating of the manga' })
   bayesianAverage: number;
 
-  @Field(() => Int, { description: 'Rating distribution from 10 to 0' })
+  @Field(() => [Int], { description: 'Rating distribution from 10 to 0' })
   distribution: number[];
 }
 
@@ -143,6 +143,11 @@ export class Manga {
     description: 'List stats of the manga',
   })
   listStats: ListStat[];
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'When the manga was cached',
+  })
+  cached: Date;
 }
 
 @ObjectType()

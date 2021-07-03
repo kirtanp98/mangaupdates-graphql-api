@@ -5,6 +5,7 @@ import {
   ForumStats,
   GroupData,
   Manga,
+  MangaRatings,
   MangaRelation,
 } from 'src/manga/entities/manga.entity';
 import {
@@ -13,6 +14,7 @@ import {
   RelatedType,
 } from 'src/manga/entities/type.enum';
 import MangaUpdatesEndpoint from 'src/shared/MangaUpdates';
+import { parse } from 'date-fns';
 
 @Injectable()
 export class ScrapperService implements OnModuleInit, OnModuleDestroy {
@@ -140,6 +142,12 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
         //Forum stats
         const stats = content[10].innerText;
 
+        //ratings
+        const ratings = content[11].innerText;
+
+        //Last updates
+        const updated = content[12].innerText;
+
         return {
           title: title,
           description: content[0].innerText,
@@ -156,6 +164,8 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           animeChapter: animeChapter,
           reviews: reviews,
           stats: stats,
+          ratings: ratings,
+          updated: updated,
         };
       });
     } catch (e) {
@@ -205,6 +215,8 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     formStats.topics = topics;
 
     manga.forumStats = formStats;
+    manga.ratings = this.reviewsFromString(data.ratings);
+    // manga.lastUpdated = this.parseLastUpdatedDate(data.updated);
 
     page.close();
     return manga;
@@ -262,5 +274,32 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     const regex = /\d+/g;
     const result = [...s.matchAll(regex)];
     return [Number(result[0][0]), Number(result[1][0])];
+  }
+
+  private reviewsFromString(s: string): MangaRatings {
+    const ratings = new MangaRatings();
+    const regex = /\d+/g;
+    const result = [...s.matchAll(regex)];
+
+    ratings.average = Number(result[0]);
+    ratings.votes = Number(result[3]);
+    ratings.bayesianAverage = Number(result[4] + '.' + result[5]);
+
+    //8 +9
+
+    const total: number[] = [];
+
+    for (let x = 9; x < result.length; x += 2) {
+      total.push(Number(result[x])); // from 10 to 0;
+    }
+
+    ratings.distribution = total;
+
+    return ratings;
+  }
+
+  private parseLastUpdatedDate(s: string): Date {
+    console.log(s);
+    return parse(s, 'MMMM do yyyy, h:mma..aaa x', new Date());
   }
 }

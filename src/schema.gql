@@ -21,7 +21,7 @@ type MangaRatings {
   bayesianAverage: Float!
 
   """Rating distribution from 10 to 0"""
-  distribution: Int!
+  distribution: [Int!]!
 }
 
 type Manga {
@@ -113,6 +113,9 @@ type Manga {
 
   """List stats of the manga"""
   listStats: [ListStat!]!
+
+  """When the manga was cached"""
+  cached: DateTime!
 }
 
 """Type of the manga"""
