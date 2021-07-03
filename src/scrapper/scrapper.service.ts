@@ -191,6 +191,18 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
         //year
         const year = content[20].innerText;
 
+        //publishers
+        const publishers = content[21].innerText;
+
+        //serialization
+        const serialize = content[22].innerText;
+
+        //licensed
+        const licensed = content[23].innerText;
+
+        //english publishers
+        const english = content[24].innerText;
+
         return {
           title: title,
           description: content[0].innerText,
@@ -216,6 +228,10 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           author: author,
           artist: artist,
           year: year,
+          publishers: publishers,
+          serialize: serialize,
+          licensed: licensed,
+          english: english,
         };
       });
     } catch (e) {
@@ -300,7 +316,22 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     manga.artist = artist;
 
     manga.year = Number(data.year);
-    
+
+    const publishers = data.publishers.split('\n');
+    publishers.pop();
+    manga.originalPublishers = publishers;
+
+    const serialized = data.serialize.split('\n');
+    serialized.pop();
+    manga.serializedMagazines = serialized;
+
+    manga.licensed = this.yesOrNo(data.licensed);
+
+    if (data.english !== 'N/A') {
+      const english = data.english.split('\n');
+      english.pop();
+      manga.englishPublishers = english;
+    }
 
     page.close();
 

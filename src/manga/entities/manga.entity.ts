@@ -124,17 +124,20 @@ export class Manga {
   @Field(() => Int, { description: 'Year of release' })
   year: number;
 
-  @Field({ description: 'Original publisher of the manga' })
-  originalPublisher: string;
+  @Field(() => [String], { description: 'Original publisher of the manga' })
+  originalPublishers: string[]; //improvement coming later
 
-  @Field({ description: 'Where the manga was serialized' })
-  serializedMagazine: string;
+  @Field(() => [String], { description: 'Where the manga was serialized' })
+  serializedMagazines: string[];
 
   @Field({ description: 'Is the manga licensed in english' })
   licensed: boolean;
 
-  @Field({ description: 'English publisher of the manga' })
-  englishPublisher: string;
+  @Field(() => [String], {
+    description: 'English publisher of the manga',
+    nullable: true,
+  })
+  englishPublishers?: string[];
 
   @Field(() => [ActivityStat], {
     description: 'User activity stats of the manga',

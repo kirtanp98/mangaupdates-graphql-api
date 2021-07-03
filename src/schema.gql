@@ -97,16 +97,16 @@ type Manga {
   year: Int!
 
   """Original publisher of the manga"""
-  originalPublisher: String!
+  originalPublishers: [String!]!
 
   """Where the manga was serialized"""
-  serializedMagazine: String!
+  serializedMagazines: [String!]!
 
   """Is the manga licensed in english"""
   licensed: Boolean!
 
   """English publisher of the manga"""
-  englishPublisher: String!
+  englishPublishers: [String!]
 
   """User activity stats of the manga"""
   activityStats: [ActivityStat!]!
