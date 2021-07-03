@@ -182,7 +182,14 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
         }
         recs.pop();
 
-        //
+        //authors
+        const author = content[18].innerText;
+
+        //artist
+        const artist = content[19].innerText;
+
+        //year
+        const year = content[20].innerText;
 
         return {
           title: title,
@@ -206,6 +213,9 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           categories: categories,
           caregoryRec: catRecommendations,
           recs: recs,
+          author: author,
+          artist: artist,
+          year: year,
         };
       });
     } catch (e) {
@@ -281,7 +291,21 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
       return r;
     });
 
+    const authors = data.author.split('\n');
+    authors.pop();
+    manga.authors = authors;
+
+    const artist = data.artist.split('\n');
+    artist.pop();
+    manga.artist = artist;
+
+    manga.year = Number(data.year);
+    
+
     page.close();
+
+    manga.cached = new Date();
+
     return manga;
   }
 
