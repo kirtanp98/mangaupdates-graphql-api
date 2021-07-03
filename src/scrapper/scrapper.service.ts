@@ -2,6 +2,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { Browser } from 'puppeteer';
 import {
+  ForumStats,
   GroupData,
   Manga,
   MangaRelation,
@@ -127,6 +128,18 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
         //scanlated
         const scanned = content[7].innerText;
 
+        //anime chapter
+        const animeChapter = content[8].innerText;
+
+        //review ids
+        const reviews = [...content[9].querySelectorAll('a')].map(
+          (node) => node.href,
+        );
+        reviews.pop();
+
+        //Forum stats
+        const stats = content[10].innerText;
+
         return {
           title: title,
           description: content[0].innerText,
@@ -140,6 +153,9 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           releases: releases,
           status: status,
           scanned: scanned,
+          animeChapter: animeChapter,
+          reviews: reviews,
+          stats: stats,
         };
       });
     } catch (e) {
@@ -180,6 +196,15 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     manga.releases = data.releases;
     manga.status = this.stringToStatus(data.status);
     manga.fullyScanlated = this.yesOrNo(data.scanned);
+    manga.animeChapters = data.animeChapter;
+    manga.userReviews = data.reviews.map((r) => this.getIdfromURL(r));
+
+    const formStats = new ForumStats();
+    const [topics, post] = this.statsFromStrgin(data.stats);
+    formStats.posts = post;
+    formStats.topics = topics;
+
+    manga.forumStats = formStats;
 
     page.close();
     return manga;
@@ -231,5 +256,11 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
       return false;
     }
     return true;
+  }
+
+  private statsFromStrgin(s: string): [number, number] {
+    const regex = /\d+/g;
+    const result = [...s.matchAll(regex)];
+    return [Number(result[0][0]), Number(result[1][0])];
   }
 }

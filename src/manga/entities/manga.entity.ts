@@ -73,14 +73,14 @@ export class Manga {
   @Field({ description: 'If the manga is completly scanlated' })
   fullyScanlated: boolean;
 
-  @Field(() => [String], {
+  @Field({
     description:
       'Which chapters the anime, if the manga has one otherwise empty, starts and ends',
   })
-  animeChapters: string[];
+  animeChapters: string; //improve no clue how its structured
 
-  @Field(() => [String], { description: 'User reviews of the manga' })
-  userReviews: string[]; //this will get improved on whenever I get to users/forums
+  @Field(() => [Int], { description: 'User reviews of the manga' })
+  userReviews: number[]; //this will get improved on whenever I get to users/forums
 
   @Field(() => ForumStats, { description: 'Forum stats of the manga' })
   forumStats: ForumStats;

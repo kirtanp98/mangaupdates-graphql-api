@@ -58,10 +58,10 @@ type Manga {
   """
   Which chapters the anime, if the manga has one otherwise empty, starts and ends
   """
-  animeChapters: [String!]!
+  animeChapters: String!
 
   """User reviews of the manga"""
-  userReviews: [String!]!
+  userReviews: [Int!]!
 
   """Forum stats of the manga"""
   forumStats: ForumStats!
