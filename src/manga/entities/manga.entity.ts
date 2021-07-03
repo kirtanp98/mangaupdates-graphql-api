@@ -102,16 +102,18 @@ export class Manga {
   @Field(() => [MangaGenre], { description: 'Genres of the manga' })
   genres: MangaGenre[];
 
-  @Field(() => [String], { description: 'Categories of the manga' })
-  categories: string[];
+  @Field(() => [Category], { description: 'Categories of the manga' })
+  categories: Category[];
 
-  @Field(() => [String], {
+  @Field(() => [MangaRelation], {
     description: 'Categories recommendations for the manga',
   })
-  categoriesRecommendations: string[]; //improvement coming later
+  categoriesRecommendations: MangaRelation[]; //improvement coming later
 
-  @Field(() => [String], { description: 'Recommendations for the manga' })
-  recommendations: string[]; //improvement coming later
+  @Field(() => [MangaRelation], {
+    description: 'Recommendations for the manga',
+  })
+  recommendations: MangaRelation[]; //improvement coming later
 
   @Field(() => [String], { description: 'Authors for the manga' })
   authors: string[]; //improvement coming later
@@ -160,8 +162,9 @@ export class MangaRelation {
 
   @Field(() => RelatedType, {
     description: 'Relationship of the manga towards the parent manga',
+    nullable: true,
   })
-  type: RelatedType;
+  type?: RelatedType;
 
   // @Field(() => Manga, { description: 'Related Manga' })
   // type: Manga;
@@ -197,4 +200,17 @@ export class ListStat {
     description: 'Number of times the manga appears on a list',
   })
   amount: number;
+}
+
+@ObjectType()
+export class Category {
+  @Field(() => Int, {
+    description: 'Score/relevancy of the category',
+  })
+  score: number;
+
+  @Field({
+    description: 'The name of the category',
+  })
+  name: string;
 }

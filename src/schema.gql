@@ -79,13 +79,13 @@ type Manga {
   genres: [MangaGenre!]!
 
   """Categories of the manga"""
-  categories: [String!]!
+  categories: [Category!]!
 
   """Categories recommendations for the manga"""
-  categoriesRecommendations: [String!]!
+  categoriesRecommendations: [MangaRelation!]!
 
   """Recommendations for the manga"""
-  recommendations: [String!]!
+  recommendations: [MangaRelation!]!
 
   """Authors for the manga"""
   authors: [String!]!
@@ -199,7 +199,7 @@ type MangaRelation {
   name: String!
 
   """Relationship of the manga towards the parent manga"""
-  type: RelatedMangaType!
+  type: RelatedMangaType
 }
 
 """Type of related series of the manga"""
@@ -243,6 +243,14 @@ type ListStat {
 
   """Number of times the manga appears on a list"""
   amount: Int!
+}
+
+type Category {
+  """Score/relevancy of the category"""
+  score: Int!
+
+  """The name of the category"""
+  name: String!
 }
 
 type Query {

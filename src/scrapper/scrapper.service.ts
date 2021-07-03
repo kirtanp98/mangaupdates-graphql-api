@@ -2,6 +2,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { Browser } from 'puppeteer';
 import {
+  Category,
   ForumStats,
   GroupData,
   Manga,
@@ -9,6 +10,7 @@ import {
   MangaRelation,
 } from 'src/manga/entities/manga.entity';
 import {
+  MangaGenre,
   MangaStatus,
   MangaType,
   RelatedType,
@@ -41,14 +43,13 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
       waitUntil: 'load',
     });
 
-    // const value = await page.$eval(
-    //   '.sContent',
-    //   (el: HTMLElement) => el.innerText,
-    // );
     manga.id = id;
 
     try {
       await page.click('u > b');
+      await page.click('#cat_opts > a > u');
+      // await Promise.all([page.click('u > b'), page.click('#cat_opts > a > u')]);
+      await page.waitForNavigation({ waitUntil: 'networkidle2' });
     } catch (e) {
       console.error(e);
     }
@@ -148,6 +149,41 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
         //Last updates
         const updated = content[12].innerText;
 
+        //generes
+        const genres = [
+          ...[...content[14].querySelectorAll('a')].map((node) =>
+            node.querySelector('u'),
+          ),
+        ].map((link) => link.innerText);
+        genres.pop();
+
+        //categories
+        const categories = [...content[15].querySelectorAll('li > a')].map(
+          (v: HTMLElement) => {
+            return { score: v.title, name: v.innerText };
+          },
+        ); //innerText and title
+
+        categories.shift();
+
+        //category recommendations
+        const catRecommendations = [...content[16].querySelectorAll('a')].map(
+          (v) => {
+            return { title: v.innerText, id: v.href };
+          },
+        );
+
+        //normal recommendations
+        const recs = [...content[17].querySelectorAll('a')].map((v) => {
+          return { title: v.innerText, id: v.href };
+        });
+        if (recs.length > 5) {
+          recs.splice(5, 1);
+        }
+        recs.pop();
+
+        //
+
         return {
           title: title,
           description: content[0].innerText,
@@ -166,6 +202,10 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
           stats: stats,
           ratings: ratings,
           updated: updated,
+          genres: genres,
+          categories: categories,
+          caregoryRec: catRecommendations,
+          recs: recs,
         };
       });
     } catch (e) {
@@ -216,7 +256,30 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
 
     manga.forumStats = formStats;
     manga.ratings = this.reviewsFromString(data.ratings);
-    // manga.lastUpdated = this.parseLastUpdatedDate(data.updated);
+    manga.lastUpdated = this.parseLastUpdatedDate(data.updated);
+    manga.genres = data.genres.map((value) => <MangaGenre>value);
+
+    manga.categories = data.categories.map((cat) => {
+      const category = new Category();
+      category.name = cat.name;
+      category.score = this.scoreFromString(cat.score);
+
+      return category;
+    });
+
+    manga.categoriesRecommendations = data.caregoryRec.map((value) => {
+      const r = new MangaRelation();
+      r.name = value.title;
+      r.id = this.getIdfromURL(value.id);
+      return r;
+    });
+
+    manga.recommendations = data.recs.map((value) => {
+      const r = new MangaRelation();
+      r.name = value.title;
+      r.id = this.getIdfromURL(value.id);
+      return r;
+    });
 
     page.close();
     return manga;
@@ -276,6 +339,12 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     return [Number(result[0][0]), Number(result[1][0])];
   }
 
+  private scoreFromString(s: string): number {
+    const regex = /\d+/g;
+    const result = [...s.matchAll(regex)];
+    return Number(result[0][0]);
+  }
+
   private reviewsFromString(s: string): MangaRatings {
     const ratings = new MangaRatings();
     const regex = /\d+/g;
@@ -299,7 +368,11 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
   }
 
   private parseLastUpdatedDate(s: string): Date {
-    console.log(s);
-    return parse(s, 'MMMM do yyyy, h:mma..aaa x', new Date());
+    const timeOfDay = s.substring(s.length - 6, s.length - 4).toUpperCase();
+    s = s.substring(0, s.length - 6);
+    s += timeOfDay + ' -08:00';
+
+    return parse(s, 'MMMM do yyyy, h:mmbb xxxxx', new Date());
+    // fix this later, not parsing correctly
   }
 }
