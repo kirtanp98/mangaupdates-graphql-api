@@ -17,6 +17,10 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
   }
 
   async getManga(id: number): Promise<Manga | null> {
+    if (id < 1) {
+      throw new Error('Invalid Id');
+    }
+
     const page = await this.browser.newPage();
 
     await this.disableResources(page);

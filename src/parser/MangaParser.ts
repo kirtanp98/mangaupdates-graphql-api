@@ -1,6 +1,7 @@
 import { parse } from 'date-fns';
 import { Page } from 'puppeteer';
 import {
+  ActivityStat,
   Category,
   ForumStats,
   GroupData,
@@ -12,6 +13,7 @@ import {
   MangaGenre,
   MangaStatus,
   MangaType,
+  Period,
   RelatedType,
 } from 'src/manga/entities/type.enum';
 import { Parser } from 'src/shared/Parser';
@@ -29,6 +31,7 @@ export class MangaParser implements Parser<Manga> {
 
   public async parse(page: Page): Promise<void> {
     let data;
+    let error: Error;
 
     try {
       data = await page.evaluate(() => {
@@ -178,6 +181,9 @@ export class MangaParser implements Parser<Manga> {
         //english publishers
         const english = content[24].innerText;
 
+        //activity stats
+        const activity = content[25].innerText;
+
         return {
           title: title,
           description: content[0].innerText,
@@ -207,15 +213,17 @@ export class MangaParser implements Parser<Manga> {
           serialize: serialize,
           licensed: licensed,
           english: english,
+          activityStats: activity,
         };
       });
     } catch (e) {
+      error = e as Error;
       console.error(e);
     }
 
-    if (!data) {
+    if (!data && error) {
       page.close();
-      return;
+      throw new Error('Could not fetch manga data');
     }
 
     this.manga.title = data.title;
@@ -308,6 +316,8 @@ export class MangaParser implements Parser<Manga> {
       this.manga.englishPublishers = english;
     }
 
+    this.manga.activityStats = this.activityStatsFromString(data.activityStats);
+
     page.close();
 
     this.manga.cached = new Date();
@@ -376,6 +386,35 @@ export class MangaParser implements Parser<Manga> {
     ratings.distribution = total;
 
     return ratings;
+  }
+
+  private activityStatsFromString(s: string): ActivityStat[] {
+    const stats: ActivityStat[] = [];
+
+    const statsString = s.split('\n');
+    statsString.pop();
+
+    const formatted = statsString.map((s) => {
+      const str = s.split('#');
+      return {
+        period: str[0],
+        pos: str[1].replace('(', '').replace(')', ''),
+      };
+    });
+
+    formatted.forEach((value) => {
+      const arr = value.pos.split(' ');
+      const stat = new ActivityStat();
+      stat.dateRange = <Period>value.period.split(' ')[0];
+      stat.position = Number(arr[0]);
+      if (arr.length > 1) {
+        stat.change = Number(arr[1]);
+      }
+
+      stats.push(stat);
+    });
+
+    return stats;
   }
 
   private parseLastUpdatedDate(s: string): Date {
