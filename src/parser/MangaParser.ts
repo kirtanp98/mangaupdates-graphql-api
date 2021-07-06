@@ -5,6 +5,7 @@ import {
   Category,
   ForumStats,
   GroupData,
+  ListStat,
   Manga,
   MangaRatings,
   MangaRelation,
@@ -184,6 +185,9 @@ export class MangaParser implements Parser<Manga> {
         //activity stats
         const activity = content[25].innerText;
 
+        //list stats
+        const listStats = content[26].innerText;
+
         return {
           title: title,
           description: content[0].innerText,
@@ -214,6 +218,7 @@ export class MangaParser implements Parser<Manga> {
           licensed: licensed,
           english: english,
           activityStats: activity,
+          listStats: listStats,
         };
       });
     } catch (e) {
@@ -317,6 +322,7 @@ export class MangaParser implements Parser<Manga> {
     }
 
     this.manga.activityStats = this.activityStatsFromString(data.activityStats);
+    this.manga.listStats = this.listStatsFromString(data.listStats);
 
     page.close();
 
@@ -415,6 +421,23 @@ export class MangaParser implements Parser<Manga> {
     });
 
     return stats;
+  }
+
+  private listStatsFromString(s: string): ListStat[] {
+    const lists: ListStat[] = [];
+
+    const listStrings = s.split('\n');
+    listStrings.pop();
+
+    listStrings.forEach((value) => {
+      const listA = value.split(' ');
+      const stat = new ListStat();
+      stat.amount = Number(listA[2]);
+      stat.list = listA[3];
+      lists.push(stat);
+    });
+
+    return lists;
   }
 
   private parseLastUpdatedDate(s: string): Date {
