@@ -408,13 +408,20 @@ export class MangaParser implements Parser<Manga> {
       };
     });
 
+    console.log(formatted);
+
     formatted.forEach((value) => {
-      const arr = value.pos.split(' ');
+      const arr = value.pos.split(/(\s+)/); //wack issue where the white space isn't a space
+      console.log(arr);
       const stat = new ActivityStat();
-      stat.dateRange = <Period>value.period.split(' ')[0];
+      stat.dateRange = this.stringToPeriod(value.period.split(' ')[0]); //<Period>value.period.split(' ')[0];
       stat.position = Number(arr[0]);
-      if (arr.length > 1) {
-        stat.change = Number(arr[1]);
+      stat.change = 0;
+      if (arr.length > 2) {
+        const num = Number(arr[2].replace('+', ''));
+        if (!Number.isNaN(num)) {
+          stat.change = Number(num);
+        }
       }
 
       stats.push(stat);
@@ -432,8 +439,8 @@ export class MangaParser implements Parser<Manga> {
     listStrings.forEach((value) => {
       const listA = value.split(' ');
       const stat = new ListStat();
-      stat.amount = Number(listA[2]);
-      stat.list = listA[3];
+      stat.amount = Number(listA[1]);
+      stat.list = listA[2];
       lists.push(stat);
     });
 
@@ -447,6 +454,29 @@ export class MangaParser implements Parser<Manga> {
 
     return parse(s, 'MMMM do yyyy, h:mmbb xxxxx', new Date());
     // fix this later, not parsing correctly
+  }
+
+  private stringToPeriod(s: string): Period {
+    switch (s) {
+      case 'Weekly':
+        return Period.Weekly;
+        break;
+      case 'Monthly':
+        return Period.Monthly;
+        break;
+      case '3':
+        return Period.ThreeMonths;
+        break;
+      case '6':
+        return Period.SixMonths;
+        break;
+      case 'Year':
+        return Period.Year;
+        break;
+      default:
+        return Period.Year;
+        break;
+    }
   }
 
   private getIdfromURL(url: string): number {

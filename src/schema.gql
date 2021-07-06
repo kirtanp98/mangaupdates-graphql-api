@@ -225,7 +225,7 @@ type ActivityStat {
   position: Int!
 
   """Position change of the manga"""
-  change: Int!
+  change: Int
 }
 
 """Activity Stats of the manga"""

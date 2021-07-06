@@ -190,11 +190,8 @@ export class ActivityStat {
   @Field(() => Int, { description: 'Position of the manga' })
   position: number;
 
-  @Field(() => Int, {
-    description: 'Position change of the manga',
-    nullable: true,
-  })
-  change?: number;
+  @Field(() => Int, { description: 'Position change of the manga' })
+  change: number;
 }
 
 @ObjectType()
