@@ -91,13 +91,15 @@ export class MangaParser implements Parser<Manga> {
         const groupName = groupdoms.map(
           (element: HTMLElement) => element.innerText,
         );
-        groupName.pop();
 
         const groupId = groupdoms.map((element) => {
           return element.href;
         });
 
-        groupId.pop();
+        if (groupName[groupName.length - 1] === 'Less...') {
+          groupName.pop();
+          groupId.pop();
+        }
 
         // latest releases
         const releases = content[5].innerText.split('\n');
@@ -231,7 +233,7 @@ export class MangaParser implements Parser<Manga> {
     }
 
     this.manga.title = data.title;
-    this.manga.description = data.description;
+    this.manga.description = data.description.replace(' Less...', '');
     this.manga.image = data.img;
     this.manga.type = <MangaType>data.type; //bad code
     this.manga.associatedName = data.names;
