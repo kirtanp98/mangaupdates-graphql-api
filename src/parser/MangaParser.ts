@@ -407,7 +407,6 @@ export class MangaParser implements Parser<Manga> {
 
     formatted.forEach((value) => {
       const arr = value.pos.split(/(\s+)/); //wack issue where the white space isn't a space
-      console.log(arr);
       const stat = new ActivityStat();
       stat.dateRange = this.stringToPeriod(value.period.split(' ')[0]);
       stat.position = Number(arr[0]);

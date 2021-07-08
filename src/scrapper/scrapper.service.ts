@@ -34,7 +34,7 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
       await page.click('u > b');
       await page.click('#cat_opts > a > u');
 
-      await page.waitForNavigation({ timeout: 1000 });
+      await page.waitForNavigation({ timeout: 500 });
     } catch (e) {
       console.error(e);
     }
