@@ -57,12 +57,11 @@ export class MangaParser implements Parser<Manga> {
 
         const mangaRelations = [];
 
-        // content[2].innerText.split('\\n').map((v) => v.split(' ('));
         const mangaR = content[2].innerText
           .split('\n')
           .map((v) => v.split(' ('))
           .map((t) => {
-            const type = t[t.length - 1]; //.slice(0, -1);
+            const type = t[t.length - 1];
             return { name: t[0], type: type };
           });
 
@@ -381,8 +380,6 @@ export class MangaParser implements Parser<Manga> {
     ratings.votes = Number(result[3]);
     ratings.bayesianAverage = Number(result[4] + '.' + result[5]);
 
-    //8 +9
-
     const total: number[] = [];
 
     for (let x = 9; x < result.length; x += 2) {
@@ -408,13 +405,11 @@ export class MangaParser implements Parser<Manga> {
       };
     });
 
-    console.log(formatted);
-
     formatted.forEach((value) => {
       const arr = value.pos.split(/(\s+)/); //wack issue where the white space isn't a space
       console.log(arr);
       const stat = new ActivityStat();
-      stat.dateRange = this.stringToPeriod(value.period.split(' ')[0]); //<Period>value.period.split(' ')[0];
+      stat.dateRange = this.stringToPeriod(value.period.split(' ')[0]);
       stat.position = Number(arr[0]);
       stat.change = 0;
       if (arr.length > 2) {
