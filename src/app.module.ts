@@ -17,6 +17,7 @@ import { ScrapperModule } from './scrapper/scrapper.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       introspection: true,
       playground: true,
+      context: ({ req, res }) => ({ req, res }),
     }),
     MangaModule,
     ScrapperModule,
