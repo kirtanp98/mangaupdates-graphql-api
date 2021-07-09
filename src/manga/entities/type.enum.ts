@@ -102,4 +102,4 @@ registerEnumType(Period, {
 registerEnumType(RelatedType, {
   name: 'RelatedMangaType',
   description: 'Type of related series of the manga',
-})
+});
