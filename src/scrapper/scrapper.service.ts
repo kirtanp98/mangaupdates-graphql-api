@@ -12,6 +12,7 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     this.browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   }
+
   async onModuleDestroy() {
     await this.browser.close();
   }
