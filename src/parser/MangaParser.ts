@@ -51,10 +51,8 @@ export class MangaParser implements Parser<Manga> {
         const content = Array.from(
           document.querySelectorAll('.sContent'),
         ) as HTMLElement[];
-        const test = content.map((element) => element.innerText);
 
         //related manga
-
         const mangaRelations = [];
 
         const mangaR = content[2].innerText
@@ -142,7 +140,7 @@ export class MangaParser implements Parser<Manga> {
           (v: HTMLElement) => {
             return { score: v.title, name: v.innerText };
           },
-        ); //innerText and title
+        );
 
         categories.shift();
 
@@ -456,22 +454,16 @@ export class MangaParser implements Parser<Manga> {
     switch (s) {
       case 'Weekly':
         return Period.Weekly;
-        break;
       case 'Monthly':
         return Period.Monthly;
-        break;
       case '3':
         return Period.ThreeMonths;
-        break;
       case '6':
         return Period.SixMonths;
-        break;
       case 'Year':
         return Period.Year;
-        break;
       default:
         return Period.Year;
-        break;
     }
   }
 
