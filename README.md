@@ -1,4 +1,9 @@
 # Mangaupdates GraphQL Api
+![build badge](https://github.com/kirtanp98/mangaupdates-graphql-api//actions/workflows/integrate.yml/badge.svg)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/kirtanp98/mangaupdates-graphql-api?color=blue)
+![GitHub](https://img.shields.io/github/license/kirtanp98/mangaupdates-graphql-api)
+
+
 
 ## About The Project
 
