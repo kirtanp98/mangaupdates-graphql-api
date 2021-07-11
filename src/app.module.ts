@@ -4,7 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
 import { GqlThrottlerGuard } from './guard/GraphQLGuard';
-import { MangaModule } from './manga/manga.module';
+import { SeriesModule } from './series/series.module';
 import { ScrapperModule } from './scrapper/scrapper.module';
 
 @Module({
@@ -19,7 +19,7 @@ import { ScrapperModule } from './scrapper/scrapper.module';
       playground: true,
       context: ({ req, res }) => ({ req, res }),
     }),
-    MangaModule,
+    SeriesModule,
     ScrapperModule,
   ],
   controllers: [],

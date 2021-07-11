@@ -1,8 +1,8 @@
 {
-  "name": "mangaupdates",
+  "name": "mangaupdates-graphql-api",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Kirtan Patel",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

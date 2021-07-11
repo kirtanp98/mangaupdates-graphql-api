@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ScrapperService } from 'src/scrapper/scrapper.service';
 
 @Injectable()
-export class MangaService {
+export class SeriesService {
   constructor(private readonly scrapper: ScrapperService) {}
 
-  async findOne(id: number) {
-    const manga = await this.scrapper.getManga(id);
-    return manga;
+  async getSeries(id: number) {
+    return await this.scrapper.getSeries(id);
   }
 }
