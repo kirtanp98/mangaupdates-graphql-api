@@ -6,28 +6,24 @@ import {
   ForumStats,
   GroupData,
   ListStat,
-  Manga,
-  MangaRatings,
-  MangaRelation,
-} from 'src/manga/entities/manga.entity';
+  Series,
+  SeriesRatings,
+  SeriesRelation,
+} from 'src/series/entities/series.entity';
 import {
-  MangaGenre,
-  MangaStatus,
-  MangaType,
+  SeriesGenre,
+  SeriesStatus,
+  SeriesType,
   Period,
   RelatedType,
-} from 'src/manga/entities/type.enum';
+} from 'src/series/entities/type.enum';
 import { Parser } from 'src/shared/Parser';
 
-export class MangaParser implements Parser<Manga> {
-  manga: Manga = new Manga();
+export class SeriesParser implements Parser<Series> {
+  series: Series = new Series();
 
   public setId(id: number): void {
-    this.manga.id = id;
-  }
-
-  public setTitle(title: string): void {
-    this.manga.title = title;
+    this.series.id = id;
   }
 
   public async parse(page: Page): Promise<void> {
@@ -36,7 +32,6 @@ export class MangaParser implements Parser<Manga> {
 
     try {
       data = await page.evaluate(() => {
-        // releasestitle tabletitle
         document.querySelectorAll('u > b').forEach((v: HTMLElement) => {
           if (v.innerText == 'M') {
             v.click();
@@ -47,15 +42,15 @@ export class MangaParser implements Parser<Manga> {
           document.querySelector('.releasestitle.tabletitle') as HTMLElement
         ).innerText;
 
-        //All the contntet
+        //get all the content
         const content = Array.from(
           document.querySelectorAll('.sContent'),
         ) as HTMLElement[];
 
-        //related manga
-        const mangaRelations = [];
+        //related series
+        const seriesRelations = [];
 
-        const mangaR = content[2].innerText
+        const seriesRelationParsed = content[2].innerText
           .split('\n')
           .map((v) => v.split(' ('))
           .map((t) => {
@@ -68,18 +63,18 @@ export class MangaParser implements Parser<Manga> {
         );
 
         for (let x = 0; x < ids.length; x++) {
-          mangaRelations.push({
-            name: mangaR[x].name,
-            type: mangaR[x].type,
+          seriesRelations.push({
+            name: seriesRelationParsed[x].name,
+            type: seriesRelationParsed[x].type,
             id: ids[x],
           });
         }
 
-        //associatedNames of the manga
+        //associatedNames of the series
         const associatedName = content[3].innerText.split('\n');
         associatedName.pop();
 
-        //img of the manga
+        //img of the series
         const image = document.querySelector('.sContent > center > img');
         const imgUrl: string | null =
           image != null ? (image as HTMLImageElement).src : null;
@@ -192,11 +187,10 @@ export class MangaParser implements Parser<Manga> {
           description: content[0].innerText,
           type: content[1].innerText,
           names: associatedName,
-          content: test,
-          relations: mangaRelations,
+          relations: seriesRelations,
           img: imgUrl,
           groupName: groupName,
-          groupid: groupId,
+          groupId: groupId,
           releases: releases,
           status: status,
           scanned: scanned,
@@ -207,7 +201,7 @@ export class MangaParser implements Parser<Manga> {
           updated: updated,
           genres: genres,
           categories: categories,
-          caregoryRec: catRecommendations,
+          categoryRec: catRecommendations,
           recs: recs,
           author: author,
           artist: artist,
@@ -227,16 +221,16 @@ export class MangaParser implements Parser<Manga> {
 
     if (!data && error) {
       page.close();
-      throw new Error('Could not fetch manga data');
+      throw new Error('Could not fetch series data');
     }
 
-    this.manga.title = data.title;
-    this.manga.description = data.description.replace(' Less...', '');
-    this.manga.image = data.img;
-    this.manga.type = <MangaType>data.type; //bad code
-    this.manga.associatedName = data.names;
-    this.manga.related = data.relations.map((value) => {
-      const r = new MangaRelation();
+    this.series.title = data.title;
+    this.series.description = data.description.replace(' Less...', '');
+    this.series.image = data.img;
+    this.series.type = <SeriesType>data.type; //bad code
+    this.series.associatedName = data.names;
+    this.series.related = data.relations.map((value) => {
+      const r = new SeriesRelation();
       r.name = value.name;
       r.id = this.getIdfromURL(value.id);
       r.type = <RelatedType>value.type.slice(0, -1);
@@ -247,32 +241,32 @@ export class MangaParser implements Parser<Manga> {
     for (let x = 0; x < data.groupName.length; x++) {
       const g = new GroupData();
       g.name = data.groupName[x];
-      if (this.doesUrlHaveId(data.groupid[x])) {
-        g.id = this.getIdfromURL(data.groupid[x]);
+      if (this.doesUrlHaveId(data.groupId[x])) {
+        g.id = this.getIdfromURL(data.groupId[x]);
       } else {
         g.id = null;
       }
       groups.push(g);
     }
 
-    this.manga.groups = groups;
-    this.manga.releases = data.releases;
-    this.manga.status = this.stringToStatus(data.status);
-    this.manga.fullyScanlated = this.yesOrNo(data.scanned);
-    this.manga.animeChapters = data.animeChapter;
-    this.manga.userReviews = data.reviews.map((r) => this.getIdfromURL(r));
+    this.series.groups = groups;
+    this.series.releases = data.releases;
+    this.series.status = this.stringToStatus(data.status);
+    this.series.fullyScanlated = this.yesOrNo(data.scanned);
+    this.series.animeChapters = data.animeChapter;
+    this.series.userReviews = data.reviews.map((r) => this.getIdfromURL(r));
 
     const formStats = new ForumStats();
     const [topics, post] = this.statsFromStrgin(data.stats);
     formStats.posts = post;
     formStats.topics = topics;
 
-    this.manga.forumStats = formStats;
-    this.manga.ratings = this.reviewsFromString(data.ratings);
-    this.manga.lastUpdated = this.parseLastUpdatedDate(data.updated);
-    this.manga.genres = data.genres.map((value) => <MangaGenre>value);
+    this.series.forumStats = formStats;
+    this.series.ratings = this.reviewsFromString(data.ratings);
+    this.series.lastUpdated = this.parseLastUpdatedDate(data.updated);
+    this.series.genres = data.genres.map((value) => <SeriesGenre>value);
 
-    this.manga.categories = data.categories.map((cat) => {
+    this.series.categories = data.categories.map((cat) => {
       const category = new Category();
       category.name = cat.name;
       category.score = this.scoreFromString(cat.score);
@@ -280,15 +274,15 @@ export class MangaParser implements Parser<Manga> {
       return category;
     });
 
-    this.manga.categoriesRecommendations = data.caregoryRec.map((value) => {
-      const r = new MangaRelation();
+    this.series.categoriesRecommendations = data.categoryRec.map((value) => {
+      const r = new SeriesRelation();
       r.name = value.title;
       r.id = this.getIdfromURL(value.id);
       return r;
     });
 
-    this.manga.recommendations = data.recs.map((value) => {
-      const r = new MangaRelation();
+    this.series.recommendations = data.recs.map((value) => {
+      const r = new SeriesRelation();
       r.name = value.title;
       r.id = this.getIdfromURL(value.id);
       return r;
@@ -296,60 +290,62 @@ export class MangaParser implements Parser<Manga> {
 
     const authors = data.author.split('\n');
     authors.pop();
-    this.manga.authors = authors;
+    this.series.authors = authors;
 
     const artist = data.artist.split('\n');
     artist.pop();
-    this.manga.artist = artist;
+    this.series.artist = artist;
 
-    this.manga.year = Number(data.year);
+    this.series.year = Number(data.year);
 
     const publishers = data.publishers.split('\n');
     publishers.pop();
-    this.manga.originalPublishers = publishers;
+    this.series.originalPublishers = publishers;
 
     const serialized = data.serialize.split('\n');
     serialized.pop();
-    this.manga.serializedMagazines = serialized;
+    this.series.serializedMagazines = serialized;
 
-    this.manga.licensed = this.yesOrNo(data.licensed);
+    this.series.licensed = this.yesOrNo(data.licensed);
 
     if (data.english !== 'N/A') {
       const english = data.english.split('\n');
       english.pop();
-      this.manga.englishPublishers = english;
+      this.series.englishPublishers = english;
     }
 
-    this.manga.activityStats = this.activityStatsFromString(data.activityStats);
-    this.manga.listStats = this.listStatsFromString(data.listStats);
+    this.series.activityStats = this.activityStatsFromString(
+      data.activityStats,
+    );
+    this.series.listStats = this.listStatsFromString(data.listStats);
 
     page.close();
 
-    this.manga.cached = new Date();
+    this.series.cached = new Date();
   }
 
-  public getObject(): Manga {
-    return this.manga;
+  public getObject(): Series {
+    return this.series;
   }
 
   private doesUrlHaveId(url: string): boolean {
     return url.includes('id');
   }
 
-  private stringToStatus(status: string): MangaStatus {
+  private stringToStatus(status: string): SeriesStatus {
     if (status.includes('Ongoing')) {
-      return MangaStatus.Ongoing;
+      return SeriesStatus.Ongoing;
     }
 
     if (status.includes('Hiatus')) {
-      return MangaStatus.Hiatus;
+      return SeriesStatus.Hiatus;
     }
 
     if (status.includes('Complete')) {
-      return MangaStatus.Complete;
+      return SeriesStatus.Complete;
     }
 
-    return MangaStatus.Unknown;
+    return SeriesStatus.Unknown;
   }
 
   private yesOrNo(s: string): boolean {
@@ -371,8 +367,8 @@ export class MangaParser implements Parser<Manga> {
     return Number(result[0][0]);
   }
 
-  private reviewsFromString(s: string): MangaRatings {
-    const ratings = new MangaRatings();
+  private reviewsFromString(s: string): SeriesRatings {
+    const ratings = new SeriesRatings();
     const regex = /\d+/g;
     const result = [...s.matchAll(regex)];
 

@@ -1,9 +1,9 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { Browser } from 'puppeteer';
-import { Manga } from 'src/manga/entities/manga.entity';
+import { Series } from 'src/series/entities/series.entity';
 import MangaUpdatesEndpoint from 'src/shared/MangaUpdates';
-import { MangaParser } from 'src/parser/MangaParser';
+import { SeriesParser } from 'src/parser/SeriesParser';
 
 @Injectable()
 export class ScrapperService implements OnModuleInit, OnModuleDestroy {
@@ -17,7 +17,7 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     await this.browser.close();
   }
 
-  async getManga(id: number): Promise<Manga | null> {
+  async getSeries(id: number): Promise<Series | null> {
     if (id < 1) {
       throw new Error('Invalid Id');
     }
@@ -40,7 +40,7 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
       console.error(e);
     }
 
-    const mangaParser = new MangaParser();
+    const mangaParser = new SeriesParser();
     mangaParser.setId(id);
     await mangaParser.parse(page);
 

@@ -10,115 +10,115 @@ type ForumStats {
   posts: Int!
 }
 
-type MangaRatings {
+type SeriesRatings {
   """Votes"""
   votes: Int!
 
-  """Average rating of the manga"""
+  """Average rating of the series"""
   average: Float!
 
-  """Bayesian average rating of the manga"""
+  """Bayesian average rating of the series"""
   bayesianAverage: Float!
 
   """Rating distribution from 10 to 0"""
   distribution: [Int!]!
 }
 
-type Manga {
-  """Manga Id"""
+type Series {
+  """Series Id"""
   id: Int!
 
-  """Title of the manga"""
+  """Title of the series"""
   title: String!
 
-  """Description of the manga"""
+  """Description of the series"""
   description: String!
 
-  """Type of the manga"""
+  """Type of the series"""
   type: MangaType!
 
-  """Related manga"""
-  related: [MangaRelation!]!
+  """Related series"""
+  related: [SeriesRelation!]!
 
-  """Name of the manga, often in other languages"""
+  """Name of the series, often in other languages"""
   associatedName: [String!]!
 
-  """Scanlations groups that have releases for the manga"""
+  """Scanlations groups that have releases for the series"""
   groups: [GroupData!]!
 
-  """Latest releases for the manga"""
+  """Latest releases for the series"""
   releases: [String!]!
 
-  """Status of the manga"""
+  """Status of the series"""
   status: MangaStatus!
 
-  """If the manga is completly scanlated"""
+  """If the series is completely scanlated"""
   fullyScanlated: Boolean!
 
   """
-  Which chapters the anime, if the manga has one otherwise empty, starts and ends
+  Which chapters the anime, if the series has one otherwise empty, starts and ends
   """
   animeChapters: String!
 
-  """User reviews of the manga"""
+  """User reviews of the series"""
   userReviews: [Int!]!
 
-  """Forum stats of the manga"""
+  """Forum stats of the series"""
   forumStats: ForumStats!
 
-  """User ratings of the manga"""
-  ratings: MangaRatings!
+  """User ratings of the series"""
+  ratings: SeriesRatings!
 
   """Last time the page was updated"""
   lastUpdated: DateTime!
 
-  """URL of the cover image from the manga"""
+  """URL of the cover image from the series"""
   image: String
 
-  """Genres of the manga"""
+  """Genres of the series"""
   genres: [MangaGenre!]!
 
-  """Categories of the manga"""
+  """Categories of the series"""
   categories: [Category!]!
 
-  """Categories recommendations for the manga"""
-  categoriesRecommendations: [MangaRelation!]!
+  """Categories recommendations for the series"""
+  categoriesRecommendations: [SeriesRelation!]!
 
-  """Recommendations for the manga"""
-  recommendations: [MangaRelation!]!
+  """Recommendations for the series"""
+  recommendations: [SeriesRelation!]!
 
-  """Authors for the manga"""
+  """Authors for the series"""
   authors: [String!]!
 
-  """Artist for the manga"""
+  """Artist for the series"""
   artist: [String!]!
 
   """Year of release"""
   year: Int!
 
-  """Original publisher of the manga"""
+  """Original publisher of the series"""
   originalPublishers: [String!]!
 
-  """Where the manga was serialized"""
+  """Where the series was serialized"""
   serializedMagazines: [String!]!
 
-  """Is the manga licensed in english"""
+  """Is the series licensed in english"""
   licensed: Boolean!
 
-  """English publisher of the manga"""
+  """English publisher of the series"""
   englishPublishers: [String!]
 
-  """User activity stats of the manga"""
+  """User activity stats of the series"""
   activityStats: [ActivityStat!]!
 
-  """List stats of the manga"""
+  """List stats of the series"""
   listStats: [ListStat!]!
 
-  """When the manga was cached"""
+  """When the series was cached"""
   cached: DateTime!
 }
 
-"""Type of the manga"""
+"""Type of the series"""
 enum MangaType {
   Artbook
   Doujinshi
@@ -138,7 +138,7 @@ enum MangaType {
   Spanish
 }
 
-"""Status of the manga"""
+"""Status of the series"""
 enum MangaStatus {
   Ongoing
   Hiatus
@@ -151,7 +151,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-"""Genre of the manga"""
+"""Genre of the series"""
 enum MangaGenre {
   Action
   Adult
@@ -191,18 +191,18 @@ enum MangaGenre {
   Yuri
 }
 
-type MangaRelation {
-  """id of the manga"""
+type SeriesRelation {
+  """id of the series"""
   id: Int!
 
-  """Name of the manga"""
+  """Name of the series"""
   name: String!
 
-  """Relationship of the manga towards the parent manga"""
+  """Relationship of the series towards the parent series"""
   type: RelatedMangaType
 }
 
-"""Type of related series of the manga"""
+"""Type of related series of the series"""
 enum RelatedMangaType {
   SpinOff
   SideStory
@@ -221,14 +221,14 @@ type ActivityStat {
   """Period of time"""
   dateRange: ActivityStats!
 
-  """Position of the manga"""
+  """Position of the series"""
   position: Int!
 
-  """Position change of the manga"""
+  """Position change of the series"""
   change: Int!
 }
 
-"""Activity Stats of the manga"""
+"""Activity Stats of the series"""
 enum ActivityStats {
   Weekly
   Monthly
@@ -241,7 +241,7 @@ type ListStat {
   """List"""
   list: String!
 
-  """Number of times the manga appears on a list"""
+  """Number of times the series appears on a list"""
   amount: Int!
 }
 
@@ -254,5 +254,5 @@ type Category {
 }
 
 type Query {
-  manga(id: Int!): Manga!
+  series(id: Int!): Series!
 }

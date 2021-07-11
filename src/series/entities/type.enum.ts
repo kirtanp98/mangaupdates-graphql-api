@@ -1,6 +1,6 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum MangaType {
+export enum SeriesType {
   Artbook = 'Artbook',
   Doujinshi = 'Doujinshi',
   DramaCD = 'Drama CD',
@@ -19,7 +19,7 @@ export enum MangaType {
   Spanish = 'Spanish',
 }
 
-export enum MangaGenre {
+export enum SeriesGenre {
   Action = 'Action',
   Adult = 'Adult',
   Adventure = 'Adventure',
@@ -58,7 +58,7 @@ export enum MangaGenre {
   Yuri = 'Yuri',
 }
 
-export enum MangaStatus {
+export enum SeriesStatus {
   Ongoing = 'Ongoing',
   Hiatus = 'Hiatus',
   Complete = 'Complete',
@@ -79,27 +79,27 @@ export enum RelatedType {
   Alternative = 'Alternate Story',
 }
 
-registerEnumType(MangaType, {
+registerEnumType(SeriesType, {
   name: 'MangaType',
-  description: 'Type of the manga',
+  description: 'Type of the series',
 });
 
-registerEnumType(MangaGenre, {
+registerEnumType(SeriesGenre, {
   name: 'MangaGenre',
-  description: 'Genre of the manga',
+  description: 'Genre of the series',
 });
 
-registerEnumType(MangaStatus, {
+registerEnumType(SeriesStatus, {
   name: 'MangaStatus',
-  description: 'Status of the manga',
+  description: 'Status of the series',
 });
 
 registerEnumType(Period, {
   name: 'ActivityStats',
-  description: 'Activity Stats of the manga',
+  description: 'Activity Stats of the series',
 });
 
 registerEnumType(RelatedType, {
   name: 'RelatedMangaType',
-  description: 'Type of related series of the manga',
+  description: 'Type of related series of the series',
 });
