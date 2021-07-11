@@ -314,7 +314,9 @@ export class SeriesParser implements Parser<Series> {
       this.series.englishPublishers = english;
     }
 
-    this.series.activityStats = this.activityStatsFromString(data.activityStats);
+    this.series.activityStats = this.activityStatsFromString(
+      data.activityStats,
+    );
     this.series.listStats = this.listStatsFromString(data.listStats);
 
     page.close();
