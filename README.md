@@ -4,6 +4,9 @@
 
 Mangaupdates (Baka-Updates Manga) has one of the most vast amount of information on different series, scanlations groups, authors and etc. However, getting usable information from the website is hard and requires people to scrape.
 
+Note:
+We are not affilated with mangaupdate.com.
+
 ### Built With
 
 * [NestJS](https://nestjs.com/)
