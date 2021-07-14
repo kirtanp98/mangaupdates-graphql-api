@@ -16,6 +16,10 @@ We are not affilated with mangaupdate.com.
 
 * [NestJS](https://nestjs.com/)
 * [Puppeteer](https://pptr.dev/)
+* [Cheerio](https://cheerio.js.org/)
+
+#### Why both Puppeteer and Cheerio?
+For some parts of mangaupdates, we need to interact with the page to get the data. While others we can use cheerio to parse the page, which is faster.
 
 ## Getting Started
 

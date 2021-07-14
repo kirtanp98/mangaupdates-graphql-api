@@ -254,6 +254,12 @@ type Category {
   name: String!
 }
 
+type Search {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Query {
   series(id: Int!): Series!
+  search: Search!
 }

@@ -7,6 +7,7 @@ import { GqlThrottlerGuard } from './guard/GraphQLGuard';
 import { SeriesModule } from './series/series.module';
 import { ScraperModule } from './scraper/scraper.module';
 import { CacheService } from './cache/cache.service';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CacheService } from './cache/cache.service';
     }),
     SeriesModule,
     ScraperModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [
