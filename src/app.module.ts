@@ -6,6 +6,7 @@ import { join } from 'path';
 import { GqlThrottlerGuard } from './guard/GraphQLGuard';
 import { SeriesModule } from './series/series.module';
 import { ScrapperModule } from './scrapper/scrapper.module';
+import { CacheService } from './cache/cache.service';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ScrapperModule } from './scrapper/scrapper.module';
       provide: APP_GUARD,
       useClass: GqlThrottlerGuard,
     },
+    CacheService,
   ],
 })
 export class AppModule {}
