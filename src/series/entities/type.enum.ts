@@ -77,6 +77,7 @@ export enum RelatedType {
   SpinOff = 'Spin-Off',
   SideStory = 'Side Story',
   Alternative = 'Alternate Story',
+  Sequel = 'Sequel',
 }
 
 registerEnumType(SeriesType, {
