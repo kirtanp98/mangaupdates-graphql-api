@@ -43,7 +43,7 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
     const mangaParser = new SeriesParser();
     mangaParser.setId(id);
     await mangaParser.parse(page);
-    
+
     return mangaParser.getObject();
   }
 
