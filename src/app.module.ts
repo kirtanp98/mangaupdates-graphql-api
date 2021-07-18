@@ -5,7 +5,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
 import { GqlThrottlerGuard } from './guard/GraphQLGuard';
 import { SeriesModule } from './series/series.module';
-import { ScrapperModule } from './scrapper/scrapper.module';
+import { ScraperModule } from './scraper/scraper.module';
 import { CacheService } from './cache/cache.service';
 
 @Module({
@@ -21,7 +21,7 @@ import { CacheService } from './cache/cache.service';
       context: ({ req, res }) => ({ req, res }),
     }),
     SeriesModule,
-    ScrapperModule,
+    ScraperModule,
   ],
   controllers: [],
   providers: [
