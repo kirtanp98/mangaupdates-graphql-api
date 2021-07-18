@@ -2,7 +2,6 @@ import { Resolver, Query } from '@nestjs/graphql';
 import { SearchService } from './search.service';
 import { Search } from './entities/search.entity';
 import fetch from 'node-fetch';
-imp
 
 @Resolver(() => Search)
 export class SearchResolver {
