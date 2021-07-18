@@ -6,7 +6,7 @@ import MangaUpdatesEndpoint from 'src/shared/MangaUpdates';
 import { SeriesParser } from 'src/parser/SeriesParser';
 
 @Injectable()
-export class ScrapperService implements OnModuleInit, OnModuleDestroy {
+export class ScraperService implements OnModuleInit, OnModuleDestroy {
   browser: Browser;
 
   async onModuleInit() {
@@ -43,8 +43,6 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     const mangaParser = new SeriesParser();
     mangaParser.setId(id);
     await mangaParser.parse(page);
-
-    // console.log(JSON.stringify(mangaParser.getObject()));
 
     return mangaParser.getObject();
   }

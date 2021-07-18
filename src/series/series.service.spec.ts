@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SeriesService } from './series.service';
-import { ScrapperModule } from '../scrapper/scrapper.module';
-import { ScrapperService } from '../scrapper/scrapper.service';
+import { ScraperModule } from '../scraper/scraper.module';
+import { ScraperService } from '../scraper/scraper.service';
 import { CacheService } from 'src/cache/cache.service';
 import { MockCacheService } from 'src/cache/mock.cache.service';
 
@@ -10,9 +10,9 @@ describe('SeriesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ScrapperModule],
+      imports: [ScraperModule],
       providers: [
-        ScrapperService,
+        ScraperService,
         SeriesService,
         { provide: CacheService, useClass: MockCacheService },
       ],

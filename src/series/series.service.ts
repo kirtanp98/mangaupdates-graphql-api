@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { parseISO } from 'date-fns';
 import { CacheService } from 'src/cache/cache.service';
-import { ScrapperService } from 'src/scrapper/scrapper.service';
+import { ScraperService } from 'src/scraper/scraper.service';
 import { Types } from 'src/shared/ObjectType';
 import { Series } from './entities/series.entity';
 
 @Injectable()
 export class SeriesService {
   constructor(
-    private readonly scrapper: ScrapperService,
+    private readonly scraper: ScraperService,
     private readonly cache: CacheService,
   ) {}
 
@@ -18,7 +18,7 @@ export class SeriesService {
       return this.jsonToSeries(json);
     } catch (error) {}
 
-    const series = await this.scrapper.getSeries(id);
+    const series = await this.scraper.getSeries(id);
     this.cache.setCache(id, Types.Series, JSON.stringify(series));
 
     return series;
