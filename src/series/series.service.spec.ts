@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SeriesService } from './series.service';
 import { ScrapperModule } from '../scrapper/scrapper.module';
 import { ScrapperService } from '../scrapper/scrapper.service';
+import { CacheService } from 'src/cache/cache.service';
+import { MockCacheService } from 'src/cache/mock.cache.service';
 
 describe('SeriesService', () => {
   let service: SeriesService;
@@ -9,7 +11,11 @@ describe('SeriesService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ScrapperModule],
-      providers: [ScrapperService, SeriesService],
+      providers: [
+        ScrapperService,
+        SeriesService,
+        { provide: CacheService, useClass: MockCacheService },
+      ],
     }).compile();
 
     service = module.get<SeriesService>(SeriesService);
