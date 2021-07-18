@@ -44,6 +44,8 @@ export class ScrapperService implements OnModuleInit, OnModuleDestroy {
     mangaParser.setId(id);
     await mangaParser.parse(page);
 
+    // console.log(JSON.stringify(mangaParser.getObject()));
+
     return mangaParser.getObject();
   }
 

@@ -23,9 +23,11 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
 * node
 * npm
+* redis
+  * Why don't you use docker to make it easier for people to install redis?
+    * I'm not running the redis container on where I deploy the nestjs application, but I should really make use of it. It will probably be easier for people to use.
 
 ### Installation
 
@@ -37,6 +39,7 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    $ npm install
    ```
+3. Install Redis
 
 ### Running the app
 

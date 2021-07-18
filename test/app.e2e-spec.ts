@@ -3,6 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { Queries } from './Queries';
+import { CacheService } from 'src/cache/cache.service';
+import { MockCacheService } from 'src/cache/mock.cache.service';
 
 const gql = '/graphql';
 
@@ -12,7 +14,10 @@ describe('AppController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(CacheService)
+      .useClass(MockCacheService)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
