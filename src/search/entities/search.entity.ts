@@ -1,10 +1,48 @@
-import { ObjectType, Field, Int, InputType } from '@nestjs/graphql';
+import { ObjectType, Field, Int, InputType, Float } from '@nestjs/graphql';
 import { ItemsPerPage, ResultType } from './search.enum';
 
 @ObjectType()
+export class SeriesSearchItem {
+  @Field(() => Int, { description: 'Series Id' })
+  id: number;
+
+  @Field({ description: 'Title of the series' })
+  title: string;
+
+  @Field({ description: 'Truncated description of the series' })
+  description: string;
+
+  @Field({
+    description: 'URL of the cover image from the series',
+    nullable: true,
+  })
+  image?: string;
+
+  @Field(() => Int, { description: 'Year of release' })
+  year: number;
+
+  @Field(() => Float, { description: 'Rating of the series' })
+  average: number;
+}
+
+@ObjectType()
 export class Search {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => Int, { description: 'Total pages' })
+  totalPages: number;
+
+  @Field(() => Int, { description: 'Page number' })
+  page: number;
+
+  @Field(() => ItemsPerPage, {
+    description: 'Items per page',
+  })
+  perPage?: ItemsPerPage;
+
+  @Field(() => [SeriesSearchItem], {
+    description: 'Series result',
+    nullable: true,
+  })
+  series?: SeriesSearchItem[];
 }
 
 @InputType()
@@ -17,9 +55,13 @@ export class SearchInput {
   })
   resultTypes: ResultType;
 
-  @Field(() => Int, { description: 'Page' })
-  page: number;
+  @Field(() => Int, { description: 'Page', nullable: true, defaultValue: 1 })
+  page?: number;
 
-  @Field(() => ItemsPerPage, { description: 'Items per page' })
-  perPage: ItemsPerPage;
+  @Field(() => ItemsPerPage, {
+    description: 'Items',
+    nullable: true,
+    defaultValue: ItemsPerPage.TwentyFive,
+  })
+  perPage?: ItemsPerPage;
 }

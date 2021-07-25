@@ -26,6 +26,6 @@ registerEnumType(ResultType, {
 });
 
 registerEnumType(ItemsPerPage, {
-  name: 'Items Per Page',
-  description: 'Items per page',
+  name: 'Items',
+  description: 'Items',
 });
