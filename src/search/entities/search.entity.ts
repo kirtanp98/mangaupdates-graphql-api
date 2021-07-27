@@ -63,11 +63,11 @@ export class SearchInput {
   @Field(() => String, { description: 'What to search for' })
   search: string;
 
-  @Field(() => [SortByModel], {
+  @Field(() => SortByModel, {
     description: 'How to sort results',
     nullable: true,
   })
-  sortModel?: SortByModel[];
+  sortModel?: SortByModel;
 
   @Field(() => ResultType, {
     description: 'Result types you want to return',

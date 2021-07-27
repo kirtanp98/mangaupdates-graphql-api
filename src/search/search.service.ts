@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { URLSearchParams } from 'url';
 import {
   Search,
   SearchInput,
@@ -37,8 +38,7 @@ export class SearchService {
   async seriesSearch(
     searchInput: SearchInput,
   ): Promise<[SeriesSearchItem[], number]> {
-    const params = new URLSearchParams();
-    params.append('search', searchInput.search);
+    const params = this.seriesSearchParamBuilder(searchInput);
 
     const data = await fetch('https://www.mangaupdates.com/search.html', {
       method: 'POST',
@@ -47,5 +47,13 @@ export class SearchService {
     const html = await data.text();
 
     return [[], 1];
+  }
+
+  private seriesSearchParamBuilder(searchInput: SearchInput): URLSearchParams {
+    const searchParams = new URLSearchParams();
+    searchParams.append('search', searchInput.search);
+    searchParams.append('orderby', searchInput.sortModel.field);
+
+    return searchParams;
   }
 }
