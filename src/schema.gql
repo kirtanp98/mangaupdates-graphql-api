@@ -310,6 +310,9 @@ input SearchInput {
   """What to search for"""
   search: String!
 
+  """How to sort results"""
+  sortModel: SortByModel
+
   """Result types you want to return"""
   resultTypes: ResultType!
 
@@ -318,6 +321,20 @@ input SearchInput {
 
   """Items"""
   perPage: Items = TwentyFive
+}
+
+input SortByModel {
+  """What field to sort by"""
+  field: String!
+
+  """Order sort by"""
+  sort: OrderBy = asc
+}
+
+"""How to order on certain sorts"""
+enum OrderBy {
+  asc
+  desc
 }
 
 """Results types that would show when doing a basic search"""
