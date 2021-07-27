@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, InputType, Float } from '@nestjs/graphql';
-import { ItemsPerPage, ResultType } from './search.enum';
+import { ItemsPerPage, OrderBy, ResultType } from './search.enum';
 
 @ObjectType()
 export class SeriesSearchItem {
@@ -46,9 +46,28 @@ export class Search {
 }
 
 @InputType()
+export class SortByModel {
+  @Field(() => String, { description: 'What field to sort by' })
+  field: string;
+
+  @Field(() => OrderBy, {
+    description: 'Order sort by',
+    nullable: true,
+    defaultValue: OrderBy.asc,
+  })
+  sort?: OrderBy;
+}
+
+@InputType()
 export class SearchInput {
   @Field(() => String, { description: 'What to search for' })
   search: string;
+
+  @Field(() => [SortByModel], {
+    description: 'How to sort results',
+    nullable: true,
+  })
+  sortModel?: SortByModel[];
 
   @Field(() => ResultType, {
     description: 'Result types you want to return',

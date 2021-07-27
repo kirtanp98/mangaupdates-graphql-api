@@ -20,6 +20,11 @@ export enum ItemsPerPage {
   OneHundred = 100,
 }
 
+export enum OrderBy {
+  asc = 'asc',
+  desc = 'desc',
+}
+
 registerEnumType(ResultType, {
   name: 'ResultType',
   description: 'Results types that would show when doing a basic search',
@@ -28,4 +33,9 @@ registerEnumType(ResultType, {
 registerEnumType(ItemsPerPage, {
   name: 'Items',
   description: 'Items',
+});
+
+registerEnumType(OrderBy, {
+  name: 'OrderBy',
+  description: 'How to order on certain sorts',
 });
