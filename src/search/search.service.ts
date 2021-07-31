@@ -43,8 +43,11 @@ export class SearchService {
     searchInput: SearchInput,
   ): Promise<[SeriesSearchItem[], number]> {
     const url = this.seriesSearchURLBuilder(searchInput);
+    const body = this.seriesSearchBodyBuilder(searchInput);
+
     const data = await fetch(url, {
-      method: 'GET',
+      method: 'POST',
+      body: body,
     });
     const html = await data.text();
     const $ = cheerio.load(html);
@@ -106,7 +109,16 @@ export class SearchService {
     return url + searchParams;
   }
 
+  private seriesSearchBodyBuilder(searchInput: SearchInput): URLSearchParams {
+    const params = new URLSearchParams();
+    params.append('perpage', searchInput.perPage + '');
+    return params;
+  }
+
   private parsedGenres(genres: string): SeriesGenre[] {
+    if (genres.length === 0) {
+      return [];
+    }
     const splitGenres = genres.split(', ');
     return splitGenres.map((item) => <SeriesGenre>item);
   }
