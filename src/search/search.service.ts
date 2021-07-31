@@ -105,17 +105,19 @@ export class SearchService {
   }
 
   private parseYearAndScore(text: string): [number?, number?] {
+    text = text.replace(/\s+/g, '');
+
     if (text.includes('-')) {
       // Year and score
-      const split = text.split(' -');
+      const split = text.split('-');
       const year = Number(split[0]);
-      const score = Number(text.split(' /')[0]);
+      const score = Number(split[1].split('/')[0]);
 
       return [year, score];
     } else {
       if (text.includes('/')) {
         // only score
-        return [null, Number(text.split(' /'))];
+        return [null, Number(text.split('/')[0])];
       } else {
         // only year
         return [Number(text), null];
