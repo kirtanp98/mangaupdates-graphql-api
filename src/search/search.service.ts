@@ -9,6 +9,7 @@ import { ItemsPerPage, ResultType } from './entities/search.enum';
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesGenre } from 'src/series/entities/type.enum';
+import SharedFunctions from 'src/shared/SharedMethods';
 
 @Injectable()
 export class SearchService {
@@ -48,18 +49,28 @@ export class SearchService {
     const html = await data.text();
     const $ = cheerio.load(html);
 
+    const totalPages = Number(
+      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
+    );
+
+    if (totalPages < searchInput.page) {
+      throw new Error('Page out of limit');
+    }
+
     const result: SeriesSearchItem[] = [];
 
     const series = $('.col-12.col-lg-6.p-3.text');
 
     series.each((i, elem) => {
       const parsedSeries = new SeriesSearchItem();
-      console.log(i);
 
-      parsedSeries.id = this.getIdfromURL(
+      parsedSeries.id = SharedFunctions.getIdfromURL(
         $(elem).find('.h-100.w-100').attr('href'),
       );
+
       parsedSeries.image = $(elem).find('.h-100.w-100>img').attr('src');
+
+      parsedSeries.nsfw = parsedSeries.image ? false : true;
 
       parsedSeries.title = $(elem).find('u>b').text();
 
@@ -69,7 +80,6 @@ export class SearchService {
         $(elem).find('.textsmall>a').attr('title'),
       );
 
-      // parsedSeries.year = $(elem);
       const [year, score] = this.parseYearAndScore(
         $(elem).find('.text').last().text(),
       );
@@ -80,7 +90,7 @@ export class SearchService {
       result.push(parsedSeries);
     });
 
-    return [result, 1];
+    return [result, totalPages];
   }
 
   private seriesSearchURLBuilder(searchInput: SearchInput): string {
@@ -88,15 +98,12 @@ export class SearchService {
     const searchParams = new URLSearchParams();
 
     searchParams.append('search', searchInput.search);
+    searchParams.append('page', searchInput.page + '');
     if (searchInput.sortModel) {
       searchParams.append('orderby', searchInput.sortModel.field);
     }
 
     return url + searchParams;
-  }
-
-  private getIdfromURL(url: string): number {
-    return Number.parseInt(url.split('=')[1]);
   }
 
   private parsedGenres(genres: string): SeriesGenre[] {
@@ -125,5 +132,9 @@ export class SearchService {
     }
 
     return [null, null];
+  }
+
+  private getTextInBrackets(string: string): string {
+    return string.match(/\(([^)]+)\)/)[1];
   }
 }
