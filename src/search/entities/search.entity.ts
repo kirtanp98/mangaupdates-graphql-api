@@ -1,4 +1,5 @@
 import { ObjectType, Field, Int, InputType, Float } from '@nestjs/graphql';
+import { SeriesGenre } from 'src/series/entities/type.enum';
 import { ItemsPerPage, OrderBy, ResultType } from './search.enum';
 
 @ObjectType()
@@ -18,11 +19,19 @@ export class SeriesSearchItem {
   })
   image?: string;
 
-  @Field(() => Int, { description: 'Year of release' })
-  year: number;
+  @Field(() => Int, { description: 'Year of release', nullable: true })
+  year?: number;
 
-  @Field(() => Float, { description: 'Rating of the series' })
-  average: number;
+  @Field(() => Boolean, {
+    description: 'Indicates if a series is not safe for work',
+  })
+  nsfw: boolean;
+
+  @Field(() => Float, { description: 'Rating of the series', nullable: true })
+  average?: number;
+
+  @Field(() => [SeriesGenre], { description: 'Genres of the series' })
+  genres: SeriesGenre[];
 }
 
 @ObjectType()

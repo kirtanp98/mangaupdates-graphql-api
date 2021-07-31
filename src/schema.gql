@@ -268,10 +268,16 @@ type SeriesSearchItem {
   image: String
 
   """Year of release"""
-  year: Int!
+  year: Int
+
+  """Indicates if a series is not safe for work"""
+  nsfw: Boolean!
 
   """Rating of the series"""
-  average: Float!
+  average: Float
+
+  """Genres of the series"""
+  genres: [MangaGenre!]!
 }
 
 type Search {
@@ -303,7 +309,7 @@ enum Items {
 
 type Query {
   series(id: Int!): Series!
-  search(SearchInput: SearchInput!): Search!
+  search(searchInput: SearchInput!): Search!
 }
 
 input SearchInput {

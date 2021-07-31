@@ -7,7 +7,7 @@ export class SearchResolver {
   constructor(private readonly searchService: SearchService) {}
 
   @Query(() => Search, { name: 'search' })
-  async search(@Args('SearchInput') searchInput: SearchInput) {
+  async search(@Args('searchInput') searchInput: SearchInput) {
     return this.searchService.orchestrateSearch(searchInput);
   }
 }

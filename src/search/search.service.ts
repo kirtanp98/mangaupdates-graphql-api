@@ -7,6 +7,8 @@ import {
 } from './entities/search.entity';
 import { ItemsPerPage, ResultType } from './entities/search.enum';
 import fetch from 'node-fetch';
+import cheerio from 'cheerio';
+import { SeriesGenre } from 'src/series/entities/type.enum';
 
 @Injectable()
 export class SearchService {
@@ -44,8 +46,41 @@ export class SearchService {
       method: 'GET',
     });
     const html = await data.text();
+    const $ = cheerio.load(html);
 
-    return [[], 1];
+    const result: SeriesSearchItem[] = [];
+
+    const series = $('.col-12.col-lg-6.p-3.text');
+
+    series.each((i, elem) => {
+      const parsedSeries = new SeriesSearchItem();
+      console.log(i);
+
+      parsedSeries.id = this.getIdfromURL(
+        $(elem).find('.h-100.w-100').attr('href'),
+      );
+      parsedSeries.image = $(elem).find('.h-100.w-100>img').attr('src');
+
+      parsedSeries.title = $(elem).find('u>b').text();
+
+      parsedSeries.description = $(elem).find('.text.flex-grow-1').text();
+
+      parsedSeries.genres = this.parsedGenres(
+        $(elem).find('.textsmall>a').attr('title'),
+      );
+
+      // parsedSeries.year = $(elem);
+      const [year, score] = this.parseYearAndScore(
+        $(elem).find('.text').last().text(),
+      );
+
+      parsedSeries.year = year;
+      parsedSeries.average = score;
+
+      result.push(parsedSeries);
+    });
+
+    return [result, 1];
   }
 
   private seriesSearchURLBuilder(searchInput: SearchInput): string {
@@ -58,5 +93,35 @@ export class SearchService {
     }
 
     return url + searchParams;
+  }
+
+  private getIdfromURL(url: string): number {
+    return Number.parseInt(url.split('=')[1]);
+  }
+
+  private parsedGenres(genres: string): SeriesGenre[] {
+    const splitGenres = genres.split(', ');
+    return splitGenres.map((item) => <SeriesGenre>item);
+  }
+
+  private parseYearAndScore(text: string): [number?, number?] {
+    if (text.includes('-')) {
+      // Year and score
+      const split = text.split(' -');
+      const year = Number(split[0]);
+      const score = Number(text.split(' /')[0]);
+
+      return [year, score];
+    } else {
+      if (text.includes('/')) {
+        // only score
+        return [null, Number(text.split(' /'))];
+      } else {
+        // only year
+        return [Number(text), null];
+      }
+    }
+
+    return [null, null];
   }
 }
