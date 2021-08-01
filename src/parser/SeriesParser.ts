@@ -18,6 +18,7 @@ import {
   RelatedType,
 } from 'src/series/entities/type.enum';
 import { Parser } from 'src/shared/Parser';
+import SharedFunctions from 'src/shared/SharedMethods';
 
 export class SeriesParser implements Parser<Series> {
   series: Series = new Series();
@@ -232,7 +233,7 @@ export class SeriesParser implements Parser<Series> {
     this.series.related = data.relations.map((value) => {
       const r = new SeriesRelation();
       r.name = value.name;
-      r.id = this.getIdfromURL(value.id);
+      r.id = SharedFunctions.getIdfromURL(value.id);
       r.type = <RelatedType>value.type.slice(0, -1);
       return r;
     });
@@ -242,7 +243,7 @@ export class SeriesParser implements Parser<Series> {
       const g = new GroupData();
       g.name = data.groupName[x];
       if (this.doesUrlHaveId(data.groupId[x])) {
-        g.id = this.getIdfromURL(data.groupId[x]);
+        g.id = SharedFunctions.getIdfromURL(data.groupId[x]);
       } else {
         g.id = null;
       }
@@ -254,7 +255,9 @@ export class SeriesParser implements Parser<Series> {
     this.series.status = this.stringToStatus(data.status);
     this.series.fullyScanlated = this.yesOrNo(data.scanned);
     this.series.animeChapters = data.animeChapter;
-    this.series.userReviews = data.reviews.map((r) => this.getIdfromURL(r));
+    this.series.userReviews = data.reviews.map((r) =>
+      SharedFunctions.getIdfromURL(r),
+    );
 
     const formStats = new ForumStats();
     const [topics, post] = this.statsFromStrgin(data.stats);
@@ -277,14 +280,14 @@ export class SeriesParser implements Parser<Series> {
     this.series.categoriesRecommendations = data.categoryRec.map((value) => {
       const r = new SeriesRelation();
       r.name = value.title;
-      r.id = this.getIdfromURL(value.id);
+      r.id = SharedFunctions.getIdfromURL(value.id);
       return r;
     });
 
     this.series.recommendations = data.recs.map((value) => {
       const r = new SeriesRelation();
       r.name = value.title;
-      r.id = this.getIdfromURL(value.id);
+      r.id = SharedFunctions.getIdfromURL(value.id);
       return r;
     });
 
@@ -461,9 +464,5 @@ export class SeriesParser implements Parser<Series> {
       default:
         return Period.Year;
     }
-  }
-
-  private getIdfromURL(url: string): number {
-    return Number.parseInt(url.split('=')[1]);
   }
 }
