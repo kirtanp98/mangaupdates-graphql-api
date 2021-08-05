@@ -10,6 +10,15 @@ import { SeriesGenre } from 'src/series/entities/type.enum';
 import { ItemsPerPage, OrderBy, ResultType } from './search.enum';
 
 @ObjectType()
+export class Title {
+  @Field(() => Int, { description: 'Series Id' })
+  id: number;
+
+  @Field({ description: 'Title of the series' })
+  title: string;
+}
+
+@ObjectType()
 export class SeriesSearchItem {
   @Field(() => Int, { description: 'Series Id' })
   id: number;
@@ -59,15 +68,6 @@ export class ReleaseSearchItem {
 
   @Field(() => [Group], { description: 'Groups that released the chapter' })
   groups: Group[];
-}
-
-@ObjectType()
-export class Title {
-  @Field(() => Int, { description: 'Series Id' })
-  id: number;
-
-  @Field({ description: 'Title of the series' })
-  title: string;
 }
 
 @ObjectType()

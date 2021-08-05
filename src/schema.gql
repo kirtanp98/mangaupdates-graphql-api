@@ -254,6 +254,14 @@ type Category {
   name: String!
 }
 
+type Title {
+  """Series Id"""
+  id: Int!
+
+  """Title of the series"""
+  title: String!
+}
+
 type SeriesSearchItem {
   """Series Id"""
   id: Int!
@@ -280,6 +288,31 @@ type SeriesSearchItem {
   genres: [MangaGenre!]!
 }
 
+type ReleaseSearchItem {
+  """When the release came out"""
+  date: DateTime!
+
+  """Title of the release"""
+  title: Title!
+
+  """Volume"""
+  volume: String!
+
+  """Chapter of the release"""
+  chapter: String!
+
+  """Groups that released the chapter"""
+  groups: [Group!]!
+}
+
+type Group {
+  """Group Id"""
+  id: Int!
+
+  """Name of the group"""
+  name: String!
+}
+
 type Search {
   """Total pages"""
   totalPages: Int!
@@ -292,6 +325,9 @@ type Search {
 
   """Series result"""
   series: [SeriesSearchItem!]
+
+  """Releases result"""
+  releases: [ReleaseSearchItem!]
 }
 
 """Items"""

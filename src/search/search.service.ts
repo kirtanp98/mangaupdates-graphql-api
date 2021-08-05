@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
+  ReleaseSearchItem,
   Search,
   SearchInput,
   SeriesSearchItem,
@@ -23,6 +24,9 @@ export class SearchService {
       case ResultType.Publishers:
         break;
       case ResultType.Releases:
+        const [releases, pages] = await this.releasesSearch(searchInput);
+        searchResult.releases = releases;
+        searchResult.totalPages = 1;
         break;
       case ResultType.Scanlators:
         break;
@@ -36,6 +40,48 @@ export class SearchService {
     }
 
     return searchResult;
+  }
+
+  async releasesSearch(
+    searchInput: SearchInput,
+  ): Promise<[ReleaseSearchItem[], number]> {
+    const url = this.releaseSearchURLBuilder(searchInput);
+    const data = await fetch(url, {
+      method: 'GET',
+    });
+    const html = await data.text();
+    const $ = cheerio.load(html);
+
+    // console.log($.text());
+    const totalPages = Number(
+      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
+    );
+
+    if (totalPages < searchInput.page) {
+      throw new Error('Page out of limit');
+    }
+
+    const dates = $('.row.no-gutters > .col-2.text')
+      .toArray()
+      .map((element, i) => {
+        return $(element).text();
+      });
+    console.log(dates);
+
+    const titlesAndGroups = $('.row.no-gutters > .col-4.text');
+
+    const titles = titlesAndGroups.filter((i, element) => i % 2 === 0);
+    const groups = titlesAndGroups.filter((i, element) => i % 2 === 1);
+
+    console.log(titles.length, groups.length);
+    titles.each((i, el) => {
+      console.log($(el).text());
+    });
+    groups.each((i, el) => {
+      console.log($(el).find('a').text());
+    });
+
+    return [[], 1];
   }
 
   async seriesSearch(
@@ -64,6 +110,25 @@ export class SearchService {
     const result = searchParser.getObject();
 
     return [result, totalPages];
+  }
+
+  private releaseSearchURLBuilder(searchInput: SearchInput): string {
+    //https://www.mangaupdates.com/releases.html?page=2&search=one+piece&act=archive&perpage=5&orderby=title&asc=desc
+
+    const url = 'https://www.mangaupdates.com/releases.html?';
+    const searchParams = new URLSearchParams();
+
+    searchParams.append('page', searchInput.page + '');
+    searchParams.append('search', searchInput.search);
+    searchParams.append('act', 'archive');
+    searchParams.append('perpage', searchInput.perPage + '');
+
+    if (searchInput.sortModel) {
+      searchParams.append('orderby', searchInput.sortModel.field);
+      searchParams.append('asc', searchInput.sortModel.sort);
+    }
+
+    return url + searchParams;
   }
 
   private seriesSearchURLBuilder(searchInput: SearchInput): string {
