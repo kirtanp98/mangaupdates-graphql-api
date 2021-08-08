@@ -10,19 +10,19 @@ export class ReleaseSearchParser implements Parser<ReleaseSearchItem[]> {
   public async parse($: CheerioAPI): Promise<void> {
     const dates = $('.row.no-gutters > .col-2.text')
       .toArray()
-      .map((element, i) => {
+      .map((element, _) => {
         return $(element).text();
       });
 
     const titlesAndGroups = $('.row.no-gutters > .col-4.text');
 
-    const titles = titlesAndGroups.filter((i, element) => i % 2 === 0);
-    const groups = titlesAndGroups.filter((i, element) => i % 2 === 1);
+    const titles = titlesAndGroups.filter((i) => i % 2 === 0);
+    const groups = titlesAndGroups.filter((i) => i % 2 === 1);
 
     const volumeAndChapter = $('.col-1.text.text-center');
 
-    const volumes = volumeAndChapter.filter((i, element) => i % 2 === 0);
-    const chapters = volumeAndChapter.filter((i, element) => i % 2 === 1);
+    const volumes = volumeAndChapter.filter((i) => i % 2 === 0);
+    const chapters = volumeAndChapter.filter((i) => i % 2 === 1);
 
     for (let x = 0; x < dates.length; x += 1) {
       const release = new ReleaseSearchItem();
