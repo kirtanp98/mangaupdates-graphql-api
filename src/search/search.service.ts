@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
+  Group,
   ReleaseSearchItem,
   Search,
   SearchInput,
   SeriesSearchItem,
+  Title,
 } from './entities/search.entity';
 import { ItemsPerPage, ResultType } from './entities/search.enum';
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
+import SharedFunctions from 'src/shared/SharedMethods';
 
 @Injectable()
 export class SearchService {
@@ -26,7 +29,7 @@ export class SearchService {
       case ResultType.Releases:
         const [releases, pages] = await this.releasesSearch(searchInput);
         searchResult.releases = releases;
-        searchResult.totalPages = 1;
+        searchResult.totalPages = pages;
         break;
       case ResultType.Scanlators:
         break;
@@ -75,13 +78,66 @@ export class SearchService {
 
     console.log(titles.length, groups.length);
     titles.each((i, el) => {
-      console.log($(el).text());
+      console.log($(el).text(), 'title');
+      console.log($(el).find('a').attr('href'), 'title id');
     });
     groups.each((i, el) => {
-      console.log($(el).find('a').text());
+      $(el)
+        .find('a')
+        .each((k, element) => {
+          console.log($(element).text(), $(element).attr('href'), 'group', k);
+        });
     });
 
-    return [[], 1];
+    const volumeAndChapter = $('.col-1.text.text-center');
+
+    const volumes = volumeAndChapter.filter((i, element) => i % 2 === 0);
+    const chapters = volumeAndChapter.filter((i, element) => i % 2 === 1);
+
+    volumes.each((i, el) => {
+      console.log($(el).text(), 'volumes');
+    });
+
+    chapters.each((i, el) => {
+      console.log($(el).text(), 'chapters');
+    });
+
+    console.log(
+      dates.length,
+      titles.length,
+      volumes.length,
+      chapters.length,
+      groups.length,
+    );
+
+    const result: ReleaseSearchItem[] = [];
+
+    for (let x = 0; x < dates.length; x += 1) {
+      const release = new ReleaseSearchItem();
+      release.date = new Date(); //dates[0]
+      release.title = new Title();
+      release.title.title = $(titles[x]).text();
+      release.title.id = SharedFunctions.getIdfromURL(
+        $(titles[x]).find('a').attr('href'),
+      );
+      release.volume = $(volumes[x]).text();
+      release.chapter = $(chapters[x]).text();
+
+      release.groups = [
+        ...$(groups[x])
+          .find('a')
+          .map((k, element) => {
+            const group = new Group();
+            group.id = SharedFunctions.getIdfromURL($(element).attr('href'));
+            group.name = $(element).text();
+            return group;
+          }),
+      ];
+
+      result.push(release);
+    }
+
+    return [result, totalPages];
   }
 
   async seriesSearch(
