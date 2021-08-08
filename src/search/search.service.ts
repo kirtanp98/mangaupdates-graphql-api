@@ -13,6 +13,7 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import SharedFunctions from 'src/shared/SharedMethods';
+import { parse } from 'date-fns';
 
 @Injectable()
 export class SearchService {
@@ -55,7 +56,6 @@ export class SearchService {
     const html = await data.text();
     const $ = cheerio.load(html);
 
-    // console.log($.text());
     const totalPages = Number(
       this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
     );
@@ -69,52 +69,22 @@ export class SearchService {
       .map((element, i) => {
         return $(element).text();
       });
-    console.log(dates);
 
     const titlesAndGroups = $('.row.no-gutters > .col-4.text');
 
     const titles = titlesAndGroups.filter((i, element) => i % 2 === 0);
     const groups = titlesAndGroups.filter((i, element) => i % 2 === 1);
 
-    console.log(titles.length, groups.length);
-    titles.each((i, el) => {
-      console.log($(el).text(), 'title');
-      console.log($(el).find('a').attr('href'), 'title id');
-    });
-    groups.each((i, el) => {
-      $(el)
-        .find('a')
-        .each((k, element) => {
-          console.log($(element).text(), $(element).attr('href'), 'group', k);
-        });
-    });
-
     const volumeAndChapter = $('.col-1.text.text-center');
 
     const volumes = volumeAndChapter.filter((i, element) => i % 2 === 0);
     const chapters = volumeAndChapter.filter((i, element) => i % 2 === 1);
 
-    volumes.each((i, el) => {
-      console.log($(el).text(), 'volumes');
-    });
-
-    chapters.each((i, el) => {
-      console.log($(el).text(), 'chapters');
-    });
-
-    console.log(
-      dates.length,
-      titles.length,
-      volumes.length,
-      chapters.length,
-      groups.length,
-    );
-
     const result: ReleaseSearchItem[] = [];
 
     for (let x = 0; x < dates.length; x += 1) {
       const release = new ReleaseSearchItem();
-      release.date = new Date(); //dates[0]
+      release.date = this.stringToDate(dates[x]); //new Date(); //dates[0]
       release.title = new Title();
       release.title.title = $(titles[x]).text();
       release.title.id = SharedFunctions.getIdfromURL(
@@ -138,6 +108,10 @@ export class SearchService {
     }
 
     return [result, totalPages];
+  }
+
+  private stringToDate(s: string): Date {
+    return parse(s, 'MM/dd/yy', new Date());
   }
 
   async seriesSearch(
