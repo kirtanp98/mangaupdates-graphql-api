@@ -1,19 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
-  Group,
   ReleaseSearchItem,
   Search,
   SearchInput,
   SeriesSearchItem,
-  Title,
 } from './entities/search.entity';
 import { ItemsPerPage, ResultType } from './entities/search.enum';
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
-import SharedFunctions from 'src/shared/SharedMethods';
-import { parse } from 'date-fns';
+import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 
 @Injectable()
 export class SearchService {
@@ -64,54 +61,11 @@ export class SearchService {
       throw new Error('Page out of limit');
     }
 
-    const dates = $('.row.no-gutters > .col-2.text')
-      .toArray()
-      .map((element, i) => {
-        return $(element).text();
-      });
-
-    const titlesAndGroups = $('.row.no-gutters > .col-4.text');
-
-    const titles = titlesAndGroups.filter((i, element) => i % 2 === 0);
-    const groups = titlesAndGroups.filter((i, element) => i % 2 === 1);
-
-    const volumeAndChapter = $('.col-1.text.text-center');
-
-    const volumes = volumeAndChapter.filter((i, element) => i % 2 === 0);
-    const chapters = volumeAndChapter.filter((i, element) => i % 2 === 1);
-
-    const result: ReleaseSearchItem[] = [];
-
-    for (let x = 0; x < dates.length; x += 1) {
-      const release = new ReleaseSearchItem();
-      release.date = this.stringToDate(dates[x]); //new Date(); //dates[0]
-      release.title = new Title();
-      release.title.title = $(titles[x]).text();
-      release.title.id = SharedFunctions.getIdfromURL(
-        $(titles[x]).find('a').attr('href'),
-      );
-      release.volume = $(volumes[x]).text();
-      release.chapter = $(chapters[x]).text();
-
-      release.groups = [
-        ...$(groups[x])
-          .find('a')
-          .map((k, element) => {
-            const group = new Group();
-            group.id = SharedFunctions.getIdfromURL($(element).attr('href'));
-            group.name = $(element).text();
-            return group;
-          }),
-      ];
-
-      result.push(release);
-    }
+    const searchParser = new ReleaseSearchParser();
+    await searchParser.parse($);
+    const result = searchParser.getObject();
 
     return [result, totalPages];
-  }
-
-  private stringToDate(s: string): Date {
-    return parse(s, 'MM/dd/yy', new Date());
   }
 
   async seriesSearch(
