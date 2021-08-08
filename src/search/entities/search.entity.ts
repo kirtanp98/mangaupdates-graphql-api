@@ -1,6 +1,23 @@
-import { ObjectType, Field, Int, InputType, Float } from '@nestjs/graphql';
+import {
+  ObjectType,
+  Field,
+  Int,
+  InputType,
+  Float,
+  GraphQLISODateTime,
+  createUnionType,
+} from '@nestjs/graphql';
 import { SeriesGenre } from 'src/series/entities/type.enum';
 import { ItemsPerPage, OrderBy, ResultType } from './search.enum';
+
+@ObjectType()
+export class Title {
+  @Field(() => Int, { description: 'Series Id' })
+  id: number;
+
+  @Field({ description: 'Title of the series' })
+  title: string;
+}
 
 @ObjectType()
 export class SeriesSearchItem {
@@ -8,7 +25,7 @@ export class SeriesSearchItem {
   id: number;
 
   @Field({ description: 'Title of the series' })
-  title: string;
+  name: string;
 
   @Field({ description: 'Truncated description of the series' })
   description: string;
@@ -35,6 +52,35 @@ export class SeriesSearchItem {
 }
 
 @ObjectType()
+export class ReleaseSearchItem {
+  @Field(() => GraphQLISODateTime, {
+    description: 'When the release came out',
+  })
+  date: Date;
+
+  @Field(() => Title, { description: 'Title of the release' })
+  title: Title;
+
+  @Field(() => String, { description: 'Volume' })
+  volume: string;
+
+  @Field(() => String, { description: 'Chapter of the release' })
+  chapter: string;
+
+  @Field(() => [Group], { description: 'Groups that released the chapter' })
+  groups: Group[];
+}
+
+@ObjectType()
+export class Group {
+  @Field(() => Int, { description: 'Group Id' })
+  id: number;
+
+  @Field({ description: 'Name of the group' })
+  name: string;
+}
+
+@ObjectType()
 export class Search {
   @Field(() => Int, { description: 'Total pages' })
   totalPages: number;
@@ -47,11 +93,8 @@ export class Search {
   })
   perPage?: ItemsPerPage;
 
-  @Field(() => [SeriesSearchItem], {
-    description: 'Series result',
-    nullable: true,
-  })
-  series?: SeriesSearchItem[];
+  @Field(() => [SearchResultUnion])
+  items: Array<typeof SearchResultUnion>;
 }
 
 @InputType()
@@ -93,3 +136,8 @@ export class SearchInput {
   })
   perPage?: ItemsPerPage;
 }
+
+export const SearchResultUnion = createUnionType({
+  name: 'SearchResultUnion',
+  types: () => [SeriesSearchItem, ReleaseSearchItem],
+});

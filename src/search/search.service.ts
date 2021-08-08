@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
+  ReleaseSearchItem,
   Search,
   SearchInput,
   SeriesSearchItem,
@@ -9,6 +10,7 @@ import { ItemsPerPage, ResultType } from './entities/search.enum';
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
+import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 
 @Injectable()
 export class SearchService {
@@ -23,12 +25,15 @@ export class SearchService {
       case ResultType.Publishers:
         break;
       case ResultType.Releases:
+        const [releases, pages] = await this.releasesSearch(searchInput);
+        searchResult.items = releases;
+        searchResult.totalPages = pages;
         break;
       case ResultType.Scanlators:
         break;
       case ResultType.Series:
         const [series, totalPages] = await this.seriesSearch(searchInput);
-        searchResult.series = series;
+        searchResult.items = series;
         searchResult.totalPages = totalPages;
         break;
       default:
@@ -36,6 +41,31 @@ export class SearchService {
     }
 
     return searchResult;
+  }
+
+  async releasesSearch(
+    searchInput: SearchInput,
+  ): Promise<[ReleaseSearchItem[], number]> {
+    const url = this.releaseSearchURLBuilder(searchInput);
+    const data = await fetch(url, {
+      method: 'GET',
+    });
+    const html = await data.text();
+    const $ = cheerio.load(html);
+
+    const totalPages = Number(
+      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
+    );
+
+    if (totalPages < searchInput.page) {
+      throw new Error('Page out of limit');
+    }
+
+    const searchParser = new ReleaseSearchParser();
+    await searchParser.parse($);
+    const result = searchParser.getObject();
+
+    return [result, totalPages];
   }
 
   async seriesSearch(
@@ -64,6 +94,25 @@ export class SearchService {
     const result = searchParser.getObject();
 
     return [result, totalPages];
+  }
+
+  private releaseSearchURLBuilder(searchInput: SearchInput): string {
+    //https://www.mangaupdates.com/releases.html?page=2&search=one+piece&act=archive&perpage=5&orderby=title&asc=desc
+
+    const url = 'https://www.mangaupdates.com/releases.html?';
+    const searchParams = new URLSearchParams();
+
+    searchParams.append('page', searchInput.page + '');
+    searchParams.append('search', searchInput.search);
+    searchParams.append('act', 'archive');
+    searchParams.append('perpage', searchInput.perPage + '');
+
+    if (searchInput.sortModel) {
+      searchParams.append('orderby', searchInput.sortModel.field);
+      searchParams.append('asc', searchInput.sortModel.sort);
+    }
+
+    return url + searchParams;
   }
 
   private seriesSearchURLBuilder(searchInput: SearchInput): string {

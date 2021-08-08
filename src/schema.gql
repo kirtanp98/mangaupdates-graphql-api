@@ -254,12 +254,55 @@ type Category {
   name: String!
 }
 
-type SeriesSearchItem {
+type Title {
   """Series Id"""
   id: Int!
 
   """Title of the series"""
   title: String!
+}
+
+type Group {
+  """Group Id"""
+  id: Int!
+
+  """Name of the group"""
+  name: String!
+}
+
+type Search {
+  """Total pages"""
+  totalPages: Int!
+
+  """Page number"""
+  page: Int!
+
+  """Items per page"""
+  perPage: Items!
+  items: [SearchResultUnion!]!
+}
+
+"""Items"""
+enum Items {
+  Five
+  Ten
+  Fifteen
+  TwentyFive
+  Thirty
+  Forty
+  Fifty
+  SeventyFive
+  OneHundred
+}
+
+union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem
+
+type SeriesSearchItem {
+  """Series Id"""
+  id: Int!
+
+  """Title of the series"""
+  name: String!
 
   """Truncated description of the series"""
   description: String!
@@ -280,31 +323,21 @@ type SeriesSearchItem {
   genres: [MangaGenre!]!
 }
 
-type Search {
-  """Total pages"""
-  totalPages: Int!
+type ReleaseSearchItem {
+  """When the release came out"""
+  date: DateTime!
 
-  """Page number"""
-  page: Int!
+  """Title of the release"""
+  title: Title!
 
-  """Items per page"""
-  perPage: Items!
+  """Volume"""
+  volume: String!
 
-  """Series result"""
-  series: [SeriesSearchItem!]
-}
+  """Chapter of the release"""
+  chapter: String!
 
-"""Items"""
-enum Items {
-  Five
-  Ten
-  Fifteen
-  TwentyFive
-  Thirty
-  Forty
-  Fifty
-  SeventyFive
-  OneHundred
+  """Groups that released the chapter"""
+  groups: [Group!]!
 }
 
 type Query {
