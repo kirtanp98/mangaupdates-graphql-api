@@ -262,12 +262,47 @@ type Title {
   title: String!
 }
 
+type Group {
+  """Group Id"""
+  id: Int!
+
+  """Name of the group"""
+  name: String!
+}
+
+type Search {
+  """Total pages"""
+  totalPages: Int!
+
+  """Page number"""
+  page: Int!
+
+  """Items per page"""
+  perPage: Items!
+  items: [SearchResultUnion!]!
+}
+
+"""Items"""
+enum Items {
+  Five
+  Ten
+  Fifteen
+  TwentyFive
+  Thirty
+  Forty
+  Fifty
+  SeventyFive
+  OneHundred
+}
+
+union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem
+
 type SeriesSearchItem {
   """Series Id"""
   id: Int!
 
   """Title of the series"""
-  title: String!
+  name: String!
 
   """Truncated description of the series"""
   description: String!
@@ -303,44 +338,6 @@ type ReleaseSearchItem {
 
   """Groups that released the chapter"""
   groups: [Group!]!
-}
-
-type Group {
-  """Group Id"""
-  id: Int!
-
-  """Name of the group"""
-  name: String!
-}
-
-type Search {
-  """Total pages"""
-  totalPages: Int!
-
-  """Page number"""
-  page: Int!
-
-  """Items per page"""
-  perPage: Items!
-
-  """Series result"""
-  series: [SeriesSearchItem!]
-
-  """Releases result"""
-  releases: [ReleaseSearchItem!]
-}
-
-"""Items"""
-enum Items {
-  Five
-  Ten
-  Fifteen
-  TwentyFive
-  Thirty
-  Forty
-  Fifty
-  SeventyFive
-  OneHundred
 }
 
 type Query {

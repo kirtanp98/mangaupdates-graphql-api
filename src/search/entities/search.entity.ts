@@ -5,6 +5,7 @@ import {
   InputType,
   Float,
   GraphQLISODateTime,
+  createUnionType,
 } from '@nestjs/graphql';
 import { SeriesGenre } from 'src/series/entities/type.enum';
 import { ItemsPerPage, OrderBy, ResultType } from './search.enum';
@@ -24,7 +25,7 @@ export class SeriesSearchItem {
   id: number;
 
   @Field({ description: 'Title of the series' })
-  title: string;
+  name: string;
 
   @Field({ description: 'Truncated description of the series' })
   description: string;
@@ -92,17 +93,8 @@ export class Search {
   })
   perPage?: ItemsPerPage;
 
-  @Field(() => [SeriesSearchItem], {
-    description: 'Series result',
-    nullable: true,
-  })
-  series?: SeriesSearchItem[];
-
-  @Field(() => [ReleaseSearchItem], {
-    description: 'Releases result',
-    nullable: true,
-  })
-  releases?: ReleaseSearchItem[];
+  @Field(() => [SearchResultUnion])
+  items: Array<typeof SearchResultUnion>;
 }
 
 @InputType()
@@ -144,3 +136,8 @@ export class SearchInput {
   })
   perPage?: ItemsPerPage;
 }
+
+export const SearchResultUnion = createUnionType({
+  name: 'SearchResultUnion',
+  types: () => [SeriesSearchItem, ReleaseSearchItem],
+});

@@ -21,7 +21,7 @@ export class SeriesSearchParser implements Parser<SeriesSearchItem[]> {
 
       parsedSeries.nsfw = parsedSeries.image ? false : true;
 
-      parsedSeries.title = $(elem).find('u>b').text();
+      parsedSeries.name = $(elem).find('u>b').text();
 
       parsedSeries.description = $(elem).find('.text.flex-grow-1').text();
 

@@ -26,14 +26,14 @@ export class SearchService {
         break;
       case ResultType.Releases:
         const [releases, pages] = await this.releasesSearch(searchInput);
-        searchResult.releases = releases;
+        searchResult.items = releases;
         searchResult.totalPages = pages;
         break;
       case ResultType.Scanlators:
         break;
       case ResultType.Series:
         const [series, totalPages] = await this.seriesSearch(searchInput);
-        searchResult.series = series;
+        searchResult.items = series;
         searchResult.totalPages = totalPages;
         break;
       default:
