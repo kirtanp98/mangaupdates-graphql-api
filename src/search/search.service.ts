@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
+  Contact,
   ReleaseSearchItem,
   ScanlatorSearchItem,
   Search,
@@ -12,6 +13,7 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
+import SharedFunctions from 'src/shared/SharedMethods';
 
 @Injectable()
 export class SearchService {
@@ -64,6 +66,45 @@ export class SearchService {
     if (totalPages < searchInput.page) {
       throw new Error('Page out of limit');
     }
+
+    const groups = [...$('.col-sm-5.col-9.text').map((i, el) => $(el).text())];
+
+    console.log(groups);
+
+    //.col-sm-2.col-3.text.text-right.text-sm-center
+    const active = [
+      ...$('.col-sm-2.col-3.text.text-right.text-sm-center').map((i, el) => {
+        return SharedFunctions.yesOrNo($(el).text());
+      }),
+    ];
+
+    console.log(active);
+
+    // .col-sm-5.d-none.d-sm-block.text
+
+    const sites: Contact[][] = [];
+
+    $('.col-sm-5.d-none.d-sm-block.text').each((i, el) => {
+      const groupSite: Contact[] = [];
+      $(el)
+        .find('a')
+        .each((j, e) => {
+          const contact = new Contact();
+          contact.name = $(e).text();
+          const link = $(e).attr('href');
+          if (link) {
+            contact.link = link;
+          } else {
+            contact.link = $(e).attr('title');
+          }
+
+          groupSite.push(contact);
+        });
+
+      sites.push(groupSite);
+    });
+
+    console.log(sites, sites.length);
 
     return [[], totalPages];
   }
