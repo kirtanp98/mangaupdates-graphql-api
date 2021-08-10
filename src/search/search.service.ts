@@ -68,19 +68,17 @@ export class SearchService {
     }
 
     const groups = [...$('.col-sm-5.col-9.text').map((i, el) => $(el).text())];
+    const id = [
+      ...$('.col-sm-5.col-9.text > a').map((i, el) =>
+        SharedFunctions.getIdfromURL($(el).attr('href')),
+      ),
+    ];
 
-    console.log(groups);
-
-    //.col-sm-2.col-3.text.text-right.text-sm-center
     const active = [
       ...$('.col-sm-2.col-3.text.text-right.text-sm-center').map((i, el) => {
         return SharedFunctions.yesOrNo($(el).text());
       }),
     ];
-
-    console.log(active);
-
-    // .col-sm-5.d-none.d-sm-block.text
 
     const sites: Contact[][] = [];
 
@@ -104,9 +102,19 @@ export class SearchService {
       sites.push(groupSite);
     });
 
-    console.log(sites, sites.length);
+    const scanlators: ScanlatorSearchItem[] = [];
 
-    return [[], totalPages];
+    for (let x = 0; x < groups.length; x += 1) {
+      const scanlator = new ScanlatorSearchItem();
+      scanlator.id = id[x];
+      scanlator.name = groups[x];
+      scanlator.active = active[x];
+      scanlator.contacts = sites[x];
+
+      scanlators.push(scanlator);
+    }
+
+    return [scanlators, totalPages];
   }
 
   async releasesSearch(

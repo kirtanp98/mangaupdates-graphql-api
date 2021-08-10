@@ -73,6 +73,9 @@ export class ReleaseSearchItem {
 
 @ObjectType()
 export class ScanlatorSearchItem {
+  @Field(() => Int, { description: 'Scanlator/group Id' })
+  id: number;
+
   @Field(() => String, { description: 'Name of the scanlator/group' })
   name: string;
 

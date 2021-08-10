@@ -349,6 +349,9 @@ type ReleaseSearchItem {
 }
 
 type ScanlatorSearchItem {
+  """Scanlator/group Id"""
+  id: Int!
+
   """Name of the scanlator/group"""
   name: String!
 
