@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
-  Contact,
   ReleaseSearchItem,
   ScanlatorSearchItem,
   Search,
@@ -13,7 +12,6 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
-import SharedFunctions from 'src/shared/SharedMethods';
 import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
 
 @Injectable()
