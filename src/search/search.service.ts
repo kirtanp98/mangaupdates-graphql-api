@@ -14,6 +14,7 @@ import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 import SharedFunctions from 'src/shared/SharedMethods';
+import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
 
 @Injectable()
 export class SearchService {
@@ -67,54 +68,11 @@ export class SearchService {
       throw new Error('Page out of limit');
     }
 
-    const groups = [...$('.col-sm-5.col-9.text').map((i, el) => $(el).text())];
-    const id = [
-      ...$('.col-sm-5.col-9.text > a').map((i, el) =>
-        SharedFunctions.getIdfromURL($(el).attr('href')),
-      ),
-    ];
+    const scanlationParser = new ScanlationSearchParser();
+    await scanlationParser.parse($);
+    const result = scanlationParser.getObject();
 
-    const active = [
-      ...$('.col-sm-2.col-3.text.text-right.text-sm-center').map((i, el) => {
-        return SharedFunctions.yesOrNo($(el).text());
-      }),
-    ];
-
-    const sites: Contact[][] = [];
-
-    $('.col-sm-5.d-none.d-sm-block.text').each((i, el) => {
-      const groupSite: Contact[] = [];
-      $(el)
-        .find('a')
-        .each((j, e) => {
-          const contact = new Contact();
-          contact.name = $(e).text();
-          const link = $(e).attr('href');
-          if (link) {
-            contact.link = link;
-          } else {
-            contact.link = $(e).attr('title');
-          }
-
-          groupSite.push(contact);
-        });
-
-      sites.push(groupSite);
-    });
-
-    const scanlators: ScanlatorSearchItem[] = [];
-
-    for (let x = 0; x < groups.length; x += 1) {
-      const scanlator = new ScanlatorSearchItem();
-      scanlator.id = id[x];
-      scanlator.name = groups[x];
-      scanlator.active = active[x];
-      scanlator.contacts = sites[x];
-
-      scanlators.push(scanlator);
-    }
-
-    return [scanlators, totalPages];
+    return [result, totalPages];
   }
 
   async releasesSearch(
