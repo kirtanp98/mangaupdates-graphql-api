@@ -72,6 +72,32 @@ export class ReleaseSearchItem {
 }
 
 @ObjectType()
+export class ScanlatorSearchItem {
+  @Field(() => Int, { description: 'Scanlator/group Id' })
+  id: number;
+
+  @Field(() => String, { description: 'Name of the scanlator/group' })
+  name: string;
+
+  @Field(() => Boolean, { description: 'If the scanlator/group is active' })
+  active: boolean;
+
+  @Field(() => [Contact], {
+    description: 'Where to contact the scanlator/group',
+  })
+  contacts: Contact[];
+}
+
+@ObjectType()
+export class Contact {
+  @Field(() => String, { description: 'Name of contact' })
+  name: string;
+
+  @Field(() => String, { description: 'Link of contact' })
+  link: string;
+}
+
+@ObjectType()
 export class Group {
   @Field(() => Int, { description: 'Group Id' })
   id: number;
@@ -139,5 +165,5 @@ export class SearchInput {
 
 export const SearchResultUnion = createUnionType({
   name: 'SearchResultUnion',
-  types: () => [SeriesSearchItem, ReleaseSearchItem],
+  types: () => [SeriesSearchItem, ReleaseSearchItem, ScanlatorSearchItem],
 });

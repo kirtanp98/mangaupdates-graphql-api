@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
+  Contact,
   ReleaseSearchItem,
+  ScanlatorSearchItem,
   Search,
   SearchInput,
   SeriesSearchItem,
@@ -11,6 +13,8 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
+import SharedFunctions from 'src/shared/SharedMethods';
+import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
 
 @Injectable()
 export class SearchService {
@@ -30,6 +34,9 @@ export class SearchService {
         searchResult.totalPages = pages;
         break;
       case ResultType.Scanlators:
+        const [groups, p] = await this.scanlatorsSearch(searchInput);
+        searchResult.items = groups;
+        searchResult.totalPages = p;
         break;
       case ResultType.Series:
         const [series, totalPages] = await this.seriesSearch(searchInput);
@@ -41,6 +48,31 @@ export class SearchService {
     }
 
     return searchResult;
+  }
+
+  async scanlatorsSearch(
+    searchInput: SearchInput,
+  ): Promise<[ScanlatorSearchItem[], number]> {
+    const url = this.scanlatorSearchURLBuilder(searchInput);
+    const data = await fetch(url, {
+      method: 'GET',
+    });
+    const html = await data.text();
+    const $ = cheerio.load(html);
+
+    const totalPages = Number(
+      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
+    );
+
+    if (totalPages < searchInput.page) {
+      throw new Error('Page out of limit');
+    }
+
+    const scanlationParser = new ScanlationSearchParser();
+    await scanlationParser.parse($);
+    const result = scanlationParser.getObject();
+
+    return [result, totalPages];
   }
 
   async releasesSearch(
@@ -94,6 +126,18 @@ export class SearchService {
     const result = searchParser.getObject();
 
     return [result, totalPages];
+  }
+
+  private scanlatorSearchURLBuilder(searchInput: SearchInput): string {
+    const url = 'https://www.mangaupdates.com/groups.html?';
+    const searchParams = new URLSearchParams();
+
+    searchParams.append('page', searchInput.page + '');
+    searchParams.append('search', searchInput.search);
+    searchParams.append('perpage', searchInput.perPage + '');
+
+    //active=false
+    return url + searchParams;
   }
 
   private releaseSearchURLBuilder(searchInput: SearchInput): string {

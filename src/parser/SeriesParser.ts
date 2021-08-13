@@ -253,7 +253,7 @@ export class SeriesParser implements Parser<Series> {
     this.series.groups = groups;
     this.series.releases = data.releases;
     this.series.status = this.stringToStatus(data.status);
-    this.series.fullyScanlated = this.yesOrNo(data.scanned);
+    this.series.fullyScanlated = SharedFunctions.yesOrNo(data.scanned);
     this.series.animeChapters = data.animeChapter;
     this.series.userReviews = data.reviews.map((r) =>
       SharedFunctions.getIdfromURL(r),
@@ -309,7 +309,7 @@ export class SeriesParser implements Parser<Series> {
     serialized.pop();
     this.series.serializedMagazines = serialized;
 
-    this.series.licensed = this.yesOrNo(data.licensed);
+    this.series.licensed = SharedFunctions.yesOrNo(data.licensed);
 
     if (data.english !== 'N/A') {
       const english = data.english.split('\n');
@@ -349,13 +349,6 @@ export class SeriesParser implements Parser<Series> {
     }
 
     return SeriesStatus.Unknown;
-  }
-
-  private yesOrNo(s: string): boolean {
-    if (s === 'No') {
-      return false;
-    }
-    return true;
   }
 
   private statsFromStrgin(s: string): [number, number] {

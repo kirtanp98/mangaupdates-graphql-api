@@ -262,6 +262,14 @@ type Title {
   title: String!
 }
 
+type Contact {
+  """Name of contact"""
+  name: String!
+
+  """Link of contact"""
+  link: String!
+}
+
 type Group {
   """Group Id"""
   id: Int!
@@ -295,7 +303,7 @@ enum Items {
   OneHundred
 }
 
-union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem
+union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem | ScanlatorSearchItem
 
 type SeriesSearchItem {
   """Series Id"""
@@ -338,6 +346,20 @@ type ReleaseSearchItem {
 
   """Groups that released the chapter"""
   groups: [Group!]!
+}
+
+type ScanlatorSearchItem {
+  """Scanlator/group Id"""
+  id: Int!
+
+  """Name of the scanlator/group"""
+  name: String!
+
+  """If the scanlator/group is active"""
+  active: Boolean!
+
+  """Where to contact the scanlator/group"""
+  contacts: [Contact!]!
 }
 
 type Query {
