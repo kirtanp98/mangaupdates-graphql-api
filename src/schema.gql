@@ -369,14 +369,14 @@ type PublisherSearchItem {
   """Name of the publisher"""
   publisher: String!
 
-  """Language publisher publishes"""
-  type: String!
+  """Publisher language"""
+  type: String
 
   """Amount of publications"""
-  publications: Int!
+  publications: Int
 
   """Series of publisher"""
-  series: Int!
+  series: Int
 }
 
 type Query {

@@ -96,14 +96,14 @@ export class PublisherSearchItem {
   @Field(() => String, { description: 'Name of the publisher' })
   publisher: string;
 
-  @Field(() => String, { description: 'Language publisher publishes' })
-  type: string;
+  @Field(() => String, { description: 'Publisher language', nullable: true })
+  type?: string;
 
-  @Field(() => Int, { description: 'Amount of publications' })
-  publications: number;
+  @Field(() => Int, { description: 'Amount of publications', nullable: true })
+  publications?: number;
 
-  @Field(() => Int, { description: 'Series of publisher' })
-  series: number;
+  @Field(() => Int, { description: 'Series of publisher', nullable: true })
+  series?: number;
 }
 
 @ObjectType()

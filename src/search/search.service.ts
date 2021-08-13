@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
+  PublisherSearchItem,
   ReleaseSearchItem,
   ScanlatorSearchItem,
   Search,
@@ -13,6 +14,7 @@ import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
+import SharedFunctions from 'src/shared/SharedMethods';
 
 @Injectable()
 export class SearchService {
@@ -25,6 +27,9 @@ export class SearchService {
       case ResultType.Authors:
         break;
       case ResultType.Publishers:
+        const [publisher, pa] = await this.publisherSearch(searchInput);
+        searchResult.items = publisher;
+        searchResult.totalPages = pa;
         break;
       case ResultType.Releases:
         const [releases, pages] = await this.releasesSearch(searchInput);
@@ -46,6 +51,62 @@ export class SearchService {
     }
 
     return searchResult;
+  }
+
+  async publisherSearch(
+    searchInput: SearchInput,
+  ): Promise<[PublisherSearchItem[], number]> {
+    const url = this.publisherSearchURLBuilder(searchInput);
+
+    const data = await fetch(url, {
+      method: 'GET',
+    });
+    const html = await data.text();
+    const $ = cheerio.load(html);
+
+    const totalPages = Number(
+      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
+    );
+
+    if (totalPages < searchInput.page) {
+      throw new Error('Page out of limit');
+    }
+
+    const publisherIdAndName = [
+      ...$('.col-sm-6.p-1.p-md-0.col-8.text > a').map((i, e) => {
+        return {
+          name: $(e).text(),
+          id: SharedFunctions.getIdfromURL($(e).attr('href')),
+        };
+      }),
+    ];
+
+    const publishers = publisherIdAndName.map((value) => value.name);
+    const id = publisherIdAndName.map((value) => value.id);
+
+    const otherInfo = [...$('.col-sm-2.p-1.p-md-0').map((i, e) => $(e).text())];
+    const types = otherInfo.filter((v, i) => i % 3 === 0);
+    const publications = otherInfo
+      .filter((v, i) => i % 3 === 1)
+      .map((v) => (v !== '--' ? Number(v) : null));
+    const series = otherInfo
+      .filter((v, i) => i % 3 === 2)
+      .map((v) => (v !== '--' ? Number(v) : null));
+
+    const result: PublisherSearchItem[] = [];
+
+    for (let x = 0; x < publishers.length; x += 1) {
+      const publisher = new PublisherSearchItem();
+      publisher.id = id[x];
+      publisher.publisher = publishers[x];
+      publisher.type = types[x] !== '--' ? types[x] : null;
+      publisher.publications = publications[x];
+      publisher.series = series[x];
+
+      result.push(publisher);
+    }
+
+    return [result, totalPages];
   }
 
   async scanlatorsSearch(
@@ -124,6 +185,22 @@ export class SearchService {
     const result = searchParser.getObject();
 
     return [result, totalPages];
+  }
+
+  private publisherSearchURLBuilder(searchInput: SearchInput): string {
+    const url = 'https://www.mangaupdates.com/publishers.html?';
+    const searchParams = new URLSearchParams();
+
+    searchParams.append('page', searchInput.page + '');
+    searchParams.append('search', searchInput.search);
+    searchParams.append('perpage', searchInput.perPage + '');
+
+    if (searchInput.sortModel) {
+      searchParams.append('orderby', searchInput.sortModel.field);
+      searchParams.append('asc', searchInput.sortModel.sort);
+    }
+
+    return url + searchParams;
   }
 
   private scanlatorSearchURLBuilder(searchInput: SearchInput): string {
