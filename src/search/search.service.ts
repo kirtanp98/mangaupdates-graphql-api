@@ -14,7 +14,7 @@ import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
-import SharedFunctions from 'src/shared/SharedMethods';
+import { PublisherSearchParser } from './parsers/PublisherSearchParser';
 
 @Injectable()
 export class SearchService {
@@ -72,39 +72,10 @@ export class SearchService {
       throw new Error('Page out of limit');
     }
 
-    const publisherIdAndName = [
-      ...$('.col-sm-6.p-1.p-md-0.col-8.text > a').map((i, e) => {
-        return {
-          name: $(e).text(),
-          id: SharedFunctions.getIdfromURL($(e).attr('href')),
-        };
-      }),
-    ];
+    const publisherParser = new PublisherSearchParser();
+    await publisherParser.parse($);
 
-    const publishers = publisherIdAndName.map((value) => value.name);
-    const id = publisherIdAndName.map((value) => value.id);
-
-    const otherInfo = [...$('.col-sm-2.p-1.p-md-0').map((i, e) => $(e).text())];
-    const types = otherInfo.filter((v, i) => i % 3 === 0);
-    const publications = otherInfo
-      .filter((v, i) => i % 3 === 1)
-      .map((v) => (v !== '--' ? Number(v) : null));
-    const series = otherInfo
-      .filter((v, i) => i % 3 === 2)
-      .map((v) => (v !== '--' ? Number(v) : null));
-
-    const result: PublisherSearchItem[] = [];
-
-    for (let x = 0; x < publishers.length; x += 1) {
-      const publisher = new PublisherSearchItem();
-      publisher.id = id[x];
-      publisher.publisher = publishers[x];
-      publisher.type = types[x] !== '--' ? types[x] : null;
-      publisher.publications = publications[x];
-      publisher.series = series[x];
-
-      result.push(publisher);
-    }
+    const result = publisherParser.getObject();
 
     return [result, totalPages];
   }
