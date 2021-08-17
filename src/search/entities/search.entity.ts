@@ -107,6 +107,21 @@ export class PublisherSearchItem {
 }
 
 @ObjectType()
+export class AuthorSearchItem {
+  @Field(() => Int, { description: 'Author Id' })
+  id: number;
+
+  @Field(() => String, { description: 'Name of the author' })
+  name: string;
+
+  @Field(() => [SeriesGenre], {
+    description: 'Most numerous genres for the author',
+    nullable: true,
+  })
+  genres?: SeriesGenre[];
+}
+
+@ObjectType()
 export class Contact {
   @Field(() => String, { description: 'Name of contact' })
   name: string;
@@ -188,5 +203,6 @@ export const SearchResultUnion = createUnionType({
     ReleaseSearchItem,
     ScanlatorSearchItem,
     PublisherSearchItem,
+    AuthorSearchItem,
   ],
 });
