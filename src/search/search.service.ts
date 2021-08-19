@@ -11,7 +11,7 @@ import {
 } from './entities/search.entity';
 import { ItemsPerPage, ResultType } from './entities/search.enum';
 import fetch from 'node-fetch';
-import cheerio from 'cheerio';
+import cheerio, { CheerioAPI } from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
@@ -70,13 +70,7 @@ export class SearchService {
     const html = await data.text();
     const $ = cheerio.load(html);
 
-    const totalPages = Number(
-      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
-    );
-
-    if (totalPages < searchInput.page) {
-      throw new Error('Page out of limit');
-    }
+    const totalPages = this.getPageNumbers($, searchInput);
 
     const authorParser = new AuthorSearchParser();
     await authorParser.parse($);
@@ -97,13 +91,7 @@ export class SearchService {
     const html = await data.text();
     const $ = cheerio.load(html);
 
-    const totalPages = Number(
-      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
-    );
-
-    if (totalPages < searchInput.page) {
-      throw new Error('Page out of limit');
-    }
+    const totalPages = this.getPageNumbers($, searchInput);
 
     const publisherParser = new PublisherSearchParser();
     await publisherParser.parse($);
@@ -123,13 +111,7 @@ export class SearchService {
     const html = await data.text();
     const $ = cheerio.load(html);
 
-    const totalPages = Number(
-      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
-    );
-
-    if (totalPages < searchInput.page) {
-      throw new Error('Page out of limit');
-    }
+    const totalPages = this.getPageNumbers($, searchInput);
 
     const scanlationParser = new ScanlationSearchParser();
     await scanlationParser.parse($);
@@ -148,13 +130,7 @@ export class SearchService {
     const html = await data.text();
     const $ = cheerio.load(html);
 
-    const totalPages = Number(
-      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
-    );
-
-    if (totalPages < searchInput.page) {
-      throw new Error('Page out of limit');
-    }
+    const totalPages = this.getPageNumbers($, searchInput);
 
     const searchParser = new ReleaseSearchParser();
     await searchParser.parse($);
@@ -176,6 +152,16 @@ export class SearchService {
     const html = await data.text();
     const $ = cheerio.load(html);
 
+    const totalPages = this.getPageNumbers($, searchInput);
+
+    const searchParser = new SeriesSearchParser();
+    await searchParser.parse($);
+    const result = searchParser.getObject();
+
+    return [result, totalPages];
+  }
+
+  getPageNumbers($: CheerioAPI, searchInput: SearchInput) {
     const totalPages = Number(
       this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
     );
@@ -184,11 +170,7 @@ export class SearchService {
       throw new Error('Page out of limit');
     }
 
-    const searchParser = new SeriesSearchParser();
-    await searchParser.parse($);
-    const result = searchParser.getObject();
-
-    return [result, totalPages];
+    return totalPages;
   }
 
   private authorSearchURLBuilder(searchInput: SearchInput): string {
