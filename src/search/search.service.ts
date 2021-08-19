@@ -7,6 +7,7 @@ import {
   ScanlatorSearchItem,
   Search,
   SearchInput,
+  SearchResultUnion,
   SeriesSearchItem,
 } from './entities/search.entity';
 import { ItemsPerPage, ResultType } from './entities/search.enum';
@@ -26,36 +27,30 @@ export class SearchService {
     searchResult.page = searchInput.page ?? ItemsPerPage.TwentyFive;
     searchResult.perPage = searchInput.perPage ?? 1;
 
+    let items: Array<typeof SearchResultUnion>, pages: number;
+
     switch (searchInput.resultTypes) {
       case ResultType.Authors:
-        const [authors, tP] = await this.authorSearch(searchInput);
-        searchResult.items = authors;
-        searchResult.totalPages = tP;
+        [items, pages] = await this.authorSearch(searchInput);
         break;
       case ResultType.Publishers:
-        const [publisher, pa] = await this.publisherSearch(searchInput);
-        searchResult.items = publisher;
-        searchResult.totalPages = pa;
+        [items, pages] = await this.publisherSearch(searchInput);
         break;
       case ResultType.Releases:
-        const [releases, pages] = await this.releasesSearch(searchInput);
-        searchResult.items = releases;
-        searchResult.totalPages = pages;
+        [items, pages] = await this.releasesSearch(searchInput);
         break;
       case ResultType.Scanlators:
-        const [groups, p] = await this.scanlatorsSearch(searchInput);
-        searchResult.items = groups;
-        searchResult.totalPages = p;
+        [items, pages] = await this.scanlatorsSearch(searchInput);
         break;
       case ResultType.Series:
-        const [series, totalPages] = await this.seriesSearch(searchInput);
-        searchResult.items = series;
-        searchResult.totalPages = totalPages;
+        [items, pages] = await this.seriesSearch(searchInput);
         break;
       default:
         break;
     }
 
+    searchResult.items = items;
+    searchResult.totalPages = pages;
     return searchResult;
   }
 
