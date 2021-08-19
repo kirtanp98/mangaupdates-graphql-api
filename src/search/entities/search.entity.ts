@@ -47,8 +47,11 @@ export class SeriesSearchItem {
   @Field(() => Float, { description: 'Rating of the series', nullable: true })
   average?: number;
 
-  @Field(() => [SeriesGenre], { description: 'Genres of the series' })
-  genres: SeriesGenre[];
+  @Field(() => [SeriesGenre], {
+    description: 'Genres of the series',
+    nullable: true,
+  })
+  genres?: SeriesGenre[];
 }
 
 @ObjectType()
