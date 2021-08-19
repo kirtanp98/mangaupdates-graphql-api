@@ -387,7 +387,7 @@ type AuthorSearchItem {
   name: String!
 
   """Number of series by the author"""
-  series: Int!
+  series: Int
 
   """Most numerous genres for the author"""
   genres: [MangaGenre!]

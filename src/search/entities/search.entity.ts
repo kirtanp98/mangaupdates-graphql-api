@@ -114,8 +114,11 @@ export class AuthorSearchItem {
   @Field(() => String, { description: 'Name of the author' })
   name: string;
 
-  @Field(() => Int, { description: 'Number of series by the author' })
-  series: number;
+  @Field(() => Int, {
+    description: 'Number of series by the author',
+    nullable: true,
+  })
+  series?: number;
 
   @Field(() => [SeriesGenre], {
     description: 'Most numerous genres for the author',
