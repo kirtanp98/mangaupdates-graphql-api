@@ -16,6 +16,7 @@ import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
 import { PublisherSearchParser } from './parsers/PublisherSearchParser';
+import { AuthorSearchParser } from './parsers/AuthorSearchParser';
 
 @Injectable()
 export class SearchService {
@@ -27,6 +28,9 @@ export class SearchService {
 
     switch (searchInput.resultTypes) {
       case ResultType.Authors:
+        const [authors, tP] = await this.authorSearch(searchInput);
+        searchResult.items = authors;
+        searchResult.totalPages = tP;
         break;
       case ResultType.Publishers:
         const [publisher, pa] = await this.publisherSearch(searchInput);
@@ -74,15 +78,12 @@ export class SearchService {
       throw new Error('Page out of limit');
     }
 
-    // col-md-4 col-7 p-1 p-md-0 text
+    const authorParser = new AuthorSearchParser();
+    await authorParser.parse($);
 
+    const result = authorParser.getObject();
 
-    const publisherParser = new PublisherSearchParser();
-    await publisherParser.parse($);
-
-    const result = publisherParser.getObject();
-
-    return [[], 1];
+    return [result, totalPages];
   }
 
   async publisherSearch(

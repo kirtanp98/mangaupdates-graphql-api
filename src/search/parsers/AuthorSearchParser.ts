@@ -1,4 +1,5 @@
 import { CheerioAPI } from 'cheerio';
+import { SeriesGenre } from 'src/series/entities/type.enum';
 import { Parser } from 'src/shared/Parser';
 import SharedFunctions from 'src/shared/SharedMethods';
 import { AuthorSearchItem } from '../entities/search.entity';
@@ -7,35 +8,42 @@ export class AuthorSearchParser implements Parser<AuthorSearchItem[]> {
   searchItems: AuthorSearchItem[] = [];
 
   public async parse($: CheerioAPI): Promise<void> {
-    // const publisherIdAndName = [
-    //   ...$('.col-sm-6.p-1.p-md-0.col-8.text > a').map((i, e) => {
-    //     return {
-    //       name: $(e).text(),
-    //       id: SharedFunctions.getIdfromURL($(e).attr('href')),
-    //     };
-    //   }),
-    // ];
-    // const publishers = publisherIdAndName.map((value) => value.name);
-    // const id = publisherIdAndName.map((value) => value.id);
-    // const otherInfo = [...$('.col-sm-2.p-1.p-md-0').map((i, e) => $(e).text())];
-    // const types = otherInfo.filter((v, i) => i % 3 === 0);
-    // const publications = otherInfo
-    //   .filter((v, i) => i % 3 === 1)
-    //   .map((v) => (v !== '--' ? Number(v) : null));
-    // const series = otherInfo
-    //   .filter((v, i) => i % 3 === 2)
-    //   .map((v) => (v !== '--' ? Number(v) : null));
-    // for (let x = 0; x < publishers.length; x += 1) {
-    //   const publisher = new PublisherSearchItem();
-    //   publisher.id = id[x];
-    //   publisher.publisher = publishers[x];
-    //   publisher.type = types[x] !== '--' ? types[x] : null;
-    //   publisher.publications = publications[x];
-    //   publisher.series = series[x];
-    //   this.searchItems.push(publisher);
-    // }
+    const authors = [
+      ...$('.col-md-4.col-7.p-1.p-md-0.text > a').map((i, e) => {
+        return {
+          author: $(e).text(),
+          id: SharedFunctions.getIdfromURL($(e).attr('href')),
+        };
+      }),
+    ];
 
-    //.col-md-4.col-7.p-1.p-md-0.text > a
+    const series = [
+      ...$('.col-md-2.d-none.d-sm-block.text').map((i, e) =>
+        Number($(e).text()),
+      ),
+    ];
+
+    const flatGenres = [
+      ...$('.col-md-6.col-5.p-1.p-md-0.text-truncate').map((i, e) =>
+        $(e).text(),
+      ),
+    ];
+
+    const genres = flatGenres.map((v) => {
+      if (v === '') {
+        return null;
+      }
+      return v.split(', ').map((z) => <SeriesGenre>z);
+    });
+
+    for (let x = 0; x < authors.length; x += 1) {
+      const authorSearchItem = new AuthorSearchItem();
+      authorSearchItem.name = authors[x].author;
+      authorSearchItem.id = authors[x].id;
+      authorSearchItem.series = series[x];
+      authorSearchItem.genres = genres[x];
+      this.searchItems.push(authorSearchItem);
+    }
   }
 
   public getObject() {
