@@ -362,6 +362,11 @@ type ScanlatorSearchItem {
   contacts: [Contact!]!
 }
 
+type RssFeed {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type PublisherSearchItem {
   """Publisher Id"""
   id: Int!
@@ -436,4 +441,8 @@ enum ResultType {
   Scanlators
   Authors
   Publishers
+}
+
+type Subscription {
+  rssFeed: RssFeed!
 }
