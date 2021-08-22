@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PubSub } from 'graphql-subscriptions';
 import { RssFeedService } from './rss-feed.service';
 
 describe('RssFeedService', () => {
@@ -6,7 +7,13 @@ describe('RssFeedService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RssFeedService],
+      providers: [
+        RssFeedService,
+        {
+          provide: 'PUB_SUB',
+          useValue: new PubSub(),
+        },
+      ],
     }).compile();
 
     service = module.get<RssFeedService>(RssFeedService);
