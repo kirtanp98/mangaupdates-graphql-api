@@ -331,7 +331,7 @@ type SeriesSearchItem {
   average: Float
 
   """Genres of the series"""
-  genres: [MangaGenre!]!
+  genres: [MangaGenre!]
 }
 
 type ReleaseSearchItem {
