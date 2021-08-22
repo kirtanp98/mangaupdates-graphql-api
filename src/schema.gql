@@ -303,7 +303,7 @@ enum Items {
   OneHundred
 }
 
-union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem | ScanlatorSearchItem
+union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem | ScanlatorSearchItem | PublisherSearchItem
 
 type SeriesSearchItem {
   """Series Id"""
@@ -360,6 +360,23 @@ type ScanlatorSearchItem {
 
   """Where to contact the scanlator/group"""
   contacts: [Contact!]!
+}
+
+type PublisherSearchItem {
+  """Publisher Id"""
+  id: Int!
+
+  """Name of the publisher"""
+  publisher: String!
+
+  """Publisher language"""
+  type: String
+
+  """Amount of publications"""
+  publications: Int
+
+  """Series of publisher"""
+  series: Int
 }
 
 type Query {

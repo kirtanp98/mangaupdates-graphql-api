@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
-  Contact,
+  PublisherSearchItem,
   ReleaseSearchItem,
   ScanlatorSearchItem,
   Search,
@@ -13,8 +13,8 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
-import SharedFunctions from 'src/shared/SharedMethods';
 import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
+import { PublisherSearchParser } from './parsers/PublisherSearchParser';
 
 @Injectable()
 export class SearchService {
@@ -27,6 +27,9 @@ export class SearchService {
       case ResultType.Authors:
         break;
       case ResultType.Publishers:
+        const [publisher, pa] = await this.publisherSearch(searchInput);
+        searchResult.items = publisher;
+        searchResult.totalPages = pa;
         break;
       case ResultType.Releases:
         const [releases, pages] = await this.releasesSearch(searchInput);
@@ -48,6 +51,33 @@ export class SearchService {
     }
 
     return searchResult;
+  }
+
+  async publisherSearch(
+    searchInput: SearchInput,
+  ): Promise<[PublisherSearchItem[], number]> {
+    const url = this.publisherSearchURLBuilder(searchInput);
+
+    const data = await fetch(url, {
+      method: 'GET',
+    });
+    const html = await data.text();
+    const $ = cheerio.load(html);
+
+    const totalPages = Number(
+      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
+    );
+
+    if (totalPages < searchInput.page) {
+      throw new Error('Page out of limit');
+    }
+
+    const publisherParser = new PublisherSearchParser();
+    await publisherParser.parse($);
+
+    const result = publisherParser.getObject();
+
+    return [result, totalPages];
   }
 
   async scanlatorsSearch(
@@ -126,6 +156,22 @@ export class SearchService {
     const result = searchParser.getObject();
 
     return [result, totalPages];
+  }
+
+  private publisherSearchURLBuilder(searchInput: SearchInput): string {
+    const url = 'https://www.mangaupdates.com/publishers.html?';
+    const searchParams = new URLSearchParams();
+
+    searchParams.append('page', searchInput.page + '');
+    searchParams.append('search', searchInput.search);
+    searchParams.append('perpage', searchInput.perPage + '');
+
+    if (searchInput.sortModel) {
+      searchParams.append('orderby', searchInput.sortModel.field);
+      searchParams.append('asc', searchInput.sortModel.sort);
+    }
+
+    return url + searchParams;
   }
 
   private scanlatorSearchURLBuilder(searchInput: SearchInput): string {

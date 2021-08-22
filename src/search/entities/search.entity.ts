@@ -89,6 +89,24 @@ export class ScanlatorSearchItem {
 }
 
 @ObjectType()
+export class PublisherSearchItem {
+  @Field(() => Int, { description: 'Publisher Id' })
+  id: number;
+
+  @Field(() => String, { description: 'Name of the publisher' })
+  publisher: string;
+
+  @Field(() => String, { description: 'Publisher language', nullable: true })
+  type?: string;
+
+  @Field(() => Int, { description: 'Amount of publications', nullable: true })
+  publications?: number;
+
+  @Field(() => Int, { description: 'Series of publisher', nullable: true })
+  series?: number;
+}
+
+@ObjectType()
 export class Contact {
   @Field(() => String, { description: 'Name of contact' })
   name: string;
@@ -165,5 +183,10 @@ export class SearchInput {
 
 export const SearchResultUnion = createUnionType({
   name: 'SearchResultUnion',
-  types: () => [SeriesSearchItem, ReleaseSearchItem, ScanlatorSearchItem],
+  types: () => [
+    SeriesSearchItem,
+    ReleaseSearchItem,
+    ScanlatorSearchItem,
+    PublisherSearchItem,
+  ],
 });
