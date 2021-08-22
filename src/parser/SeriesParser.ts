@@ -185,6 +185,7 @@ export class SeriesParser implements Parser<Series> {
         return {
           title: title,
           description: content[0].innerText,
+          htmlDescription: content[0].querySelector('div').innerHTML,
           type: content[1].innerText,
           names: associatedName,
           relations: seriesRelations,
@@ -226,6 +227,7 @@ export class SeriesParser implements Parser<Series> {
 
     this.series.title = data.title;
     this.series.description = data.description.replace(' Less...', '');
+    this.series.htmlDescription = data.htmlDescription;
     this.series.image = data.img;
     this.series.type = <SeriesType>data.type; //bad code
     this.series.associatedName = data.names;
