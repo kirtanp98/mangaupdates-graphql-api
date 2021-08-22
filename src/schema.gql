@@ -34,6 +34,9 @@ type Series {
   """Description of the series"""
   description: String!
 
+  """Description of the series in html"""
+  htmlDescription: String!
+
   """Type of the series"""
   type: MangaType!
 
