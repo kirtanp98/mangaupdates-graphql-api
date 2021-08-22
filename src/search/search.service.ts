@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import {
+  AuthorSearchItem,
   PublisherSearchItem,
   ReleaseSearchItem,
   ScanlatorSearchItem,
@@ -15,9 +16,11 @@ import { SeriesSearchParser } from './parsers/SeriesSearchParser';
 import { ReleaseSearchParser } from './parsers/ReleaseSearchParser';
 import { ScanlationSearchParser } from './parsers/ScanlationSearchParser';
 import { PublisherSearchParser } from './parsers/PublisherSearchParser';
+import { AuthorSearchParser } from './parsers/AuthorSearchParser';
 
 @Injectable()
 export class SearchService {
+  // This needs to get refactored and all fo the code in this service too
   async orchestrateSearch(searchInput: SearchInput): Promise<Search> {
     const searchResult = new Search();
     searchResult.page = searchInput.page ?? ItemsPerPage.TwentyFive;
@@ -25,6 +28,9 @@ export class SearchService {
 
     switch (searchInput.resultTypes) {
       case ResultType.Authors:
+        const [authors, tP] = await this.authorSearch(searchInput);
+        searchResult.items = authors;
+        searchResult.totalPages = tP;
         break;
       case ResultType.Publishers:
         const [publisher, pa] = await this.publisherSearch(searchInput);
@@ -51,6 +57,33 @@ export class SearchService {
     }
 
     return searchResult;
+  }
+
+  async authorSearch(
+    searchInput: SearchInput,
+  ): Promise<[AuthorSearchItem[], number]> {
+    const url = this.authorSearchURLBuilder(searchInput);
+
+    const data = await fetch(url, {
+      method: 'GET',
+    });
+    const html = await data.text();
+    const $ = cheerio.load(html);
+
+    const totalPages = Number(
+      this.getTextInBrackets($('.d-none.d-md-inline-block').text()),
+    );
+
+    if (totalPages < searchInput.page) {
+      throw new Error('Page out of limit');
+    }
+
+    const authorParser = new AuthorSearchParser();
+    await authorParser.parse($);
+
+    const result = authorParser.getObject();
+
+    return [result, totalPages];
   }
 
   async publisherSearch(
@@ -156,6 +189,22 @@ export class SearchService {
     const result = searchParser.getObject();
 
     return [result, totalPages];
+  }
+
+  private authorSearchURLBuilder(searchInput: SearchInput): string {
+    const url = 'https://www.mangaupdates.com/authors.html?';
+    const searchParams = new URLSearchParams();
+
+    searchParams.append('page', searchInput.page + '');
+    searchParams.append('search', searchInput.search);
+    searchParams.append('perpage', searchInput.perPage + '');
+
+    if (searchInput.sortModel) {
+      searchParams.append('orderby', searchInput.sortModel.field);
+      searchParams.append('asc', searchInput.sortModel.sort);
+    }
+
+    return url + searchParams;
   }
 
   private publisherSearchURLBuilder(searchInput: SearchInput): string {

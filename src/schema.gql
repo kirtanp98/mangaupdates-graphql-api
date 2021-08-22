@@ -303,7 +303,7 @@ enum Items {
   OneHundred
 }
 
-union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem | ScanlatorSearchItem | PublisherSearchItem
+union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem | ScanlatorSearchItem | PublisherSearchItem | AuthorSearchItem
 
 type SeriesSearchItem {
   """Series Id"""
@@ -377,6 +377,20 @@ type PublisherSearchItem {
 
   """Series of publisher"""
   series: Int
+}
+
+type AuthorSearchItem {
+  """Author Id"""
+  id: Int!
+
+  """Name of the author"""
+  name: String!
+
+  """Number of series by the author"""
+  series: Int
+
+  """Most numerous genres for the author"""
+  genres: [MangaGenre!]
 }
 
 type Query {
