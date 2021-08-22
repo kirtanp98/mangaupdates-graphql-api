@@ -185,7 +185,7 @@ export class SeriesParser implements Parser<Series> {
         return {
           title: title,
           description: content[0].innerText,
-          htmlDescription: content[0].querySelector('div').innerHTML,
+          htmlDescription: content[0].innerHTML,
           type: content[1].innerText,
           names: associatedName,
           relations: seriesRelations,
