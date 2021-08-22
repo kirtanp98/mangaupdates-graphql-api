@@ -257,6 +257,186 @@ type Category {
   name: String!
 }
 
+type Title {
+  """Series Id"""
+  id: Int!
+
+  """Title of the series"""
+  title: String!
+}
+
+type Contact {
+  """Name of contact"""
+  name: String!
+
+  """Link of contact"""
+  link: String!
+}
+
+type Group {
+  """Group Id"""
+  id: Int!
+
+  """Name of the group"""
+  name: String!
+}
+
+type Search {
+  """Total pages"""
+  totalPages: Int!
+
+  """Page number"""
+  page: Int!
+
+  """Items per page"""
+  perPage: Items!
+  items: [SearchResultUnion!]!
+}
+
+"""Items"""
+enum Items {
+  Five
+  Ten
+  Fifteen
+  TwentyFive
+  Thirty
+  Forty
+  Fifty
+  SeventyFive
+  OneHundred
+}
+
+union SearchResultUnion = SeriesSearchItem | ReleaseSearchItem | ScanlatorSearchItem | PublisherSearchItem | AuthorSearchItem
+
+type SeriesSearchItem {
+  """Series Id"""
+  id: Int!
+
+  """Title of the series"""
+  name: String!
+
+  """Truncated description of the series"""
+  description: String!
+
+  """URL of the cover image from the series"""
+  image: String
+
+  """Year of release"""
+  year: Int
+
+  """Indicates if a series is not safe for work"""
+  nsfw: Boolean!
+
+  """Rating of the series"""
+  average: Float
+
+  """Genres of the series"""
+  genres: [MangaGenre!]!
+}
+
+type ReleaseSearchItem {
+  """When the release came out"""
+  date: DateTime!
+
+  """Title of the release"""
+  title: Title!
+
+  """Volume"""
+  volume: String!
+
+  """Chapter of the release"""
+  chapter: String!
+
+  """Groups that released the chapter"""
+  groups: [Group!]!
+}
+
+type ScanlatorSearchItem {
+  """Scanlator/group Id"""
+  id: Int!
+
+  """Name of the scanlator/group"""
+  name: String!
+
+  """If the scanlator/group is active"""
+  active: Boolean!
+
+  """Where to contact the scanlator/group"""
+  contacts: [Contact!]!
+}
+
+type PublisherSearchItem {
+  """Publisher Id"""
+  id: Int!
+
+  """Name of the publisher"""
+  publisher: String!
+
+  """Publisher language"""
+  type: String
+
+  """Amount of publications"""
+  publications: Int
+
+  """Series of publisher"""
+  series: Int
+}
+
+type AuthorSearchItem {
+  """Author Id"""
+  id: Int!
+
+  """Name of the author"""
+  name: String!
+
+  """Number of series by the author"""
+  series: Int
+
+  """Most numerous genres for the author"""
+  genres: [MangaGenre!]
+}
+
 type Query {
   series(id: Int!): Series!
+  search(searchInput: SearchInput!): Search!
+}
+
+input SearchInput {
+  """What to search for"""
+  search: String!
+
+  """How to sort results"""
+  sortModel: SortByModel
+
+  """Result types you want to return"""
+  resultTypes: ResultType!
+
+  """Page"""
+  page: Int = 1
+
+  """Items"""
+  perPage: Items = TwentyFive
+}
+
+input SortByModel {
+  """What field to sort by"""
+  field: String!
+
+  """Order sort by"""
+  sort: OrderBy = asc
+}
+
+"""How to order on certain sorts"""
+enum OrderBy {
+  asc
+  desc
+}
+
+"""Results types that would show when doing a basic search"""
+enum ResultType {
+  Releases
+  Series
+  Scanlators
+  Authors
+  Publishers
 }
