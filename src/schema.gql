@@ -363,8 +363,20 @@ type ScanlatorSearchItem {
 }
 
 type RssFeed {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Id of release"""
+  id: Int!
+
+  """Title of release"""
+  title: String!
+
+  """Name of group"""
+  group: String
+
+  """Content of release"""
+  content: String!
+
+  """Last time the page was updated"""
+  date: DateTime!
 }
 
 type PublisherSearchItem {

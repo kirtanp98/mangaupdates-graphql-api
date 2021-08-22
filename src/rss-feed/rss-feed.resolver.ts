@@ -10,13 +10,7 @@ export class RssFeedResolver {
   constructor(
     @Inject('PUB_SUB') private pubSub: PubSubEngine,
     private readonly rssFeedService: RssFeedService,
-  ) {
-    setInterval(() => {
-      const temp = new RssFeed();
-      temp.exampleField = 1;
-      this.pubSub.publish('rssFeed', { rssFeed: temp });
-    }, 2000);
-  }
+  ) {}
 
   @SkipThrottle()
   @Subscription(() => RssFeed, {
