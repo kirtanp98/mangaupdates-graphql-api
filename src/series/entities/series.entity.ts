@@ -48,6 +48,9 @@ export class Series {
   @Field({ description: 'Description of the series' })
   description: string;
 
+  @Field({ description: 'Description of the series in html' })
+  htmlDescription: string;
+
   @Field(() => SeriesType, { description: 'Type of the series' })
   type: SeriesType;
 
