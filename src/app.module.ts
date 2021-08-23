@@ -9,6 +9,7 @@ import { ScraperModule } from './scraper/scraper.module';
 import { CacheService } from './cache/cache.service';
 import { SearchModule } from './search/search.module';
 import { RssFeedModule } from './rss-feed/rss-feed.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RssFeedModule } from './rss-feed/rss-feed.module';
       ttl: 60,
       limit: 60,
     }),
+    ScheduleModule.forRoot(),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       installSubscriptionHandlers: true,

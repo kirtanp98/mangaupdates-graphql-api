@@ -362,23 +362,6 @@ type ScanlatorSearchItem {
   contacts: [Contact!]!
 }
 
-type RssFeed {
-  """Id of release"""
-  id: Int!
-
-  """Title of release"""
-  title: String!
-
-  """Name of group"""
-  group: String
-
-  """Content of release"""
-  content: String!
-
-  """Last time the page was updated"""
-  date: DateTime!
-}
-
 type PublisherSearchItem {
   """Publisher Id"""
   id: Int!
@@ -408,6 +391,23 @@ type AuthorSearchItem {
 
   """Most numerous genres for the author"""
   genres: [MangaGenre!]
+}
+
+type RssFeed {
+  """Id of release"""
+  id: Int!
+
+  """Title of release"""
+  title: String!
+
+  """Name of group"""
+  group: String
+
+  """Content of release"""
+  content: String!
+
+  """Last time the page was updated"""
+  date: DateTime!
 }
 
 type Query {

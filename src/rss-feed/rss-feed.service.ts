@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { parse } from 'date-fns';
 import { PubSubEngine } from 'graphql-subscriptions';
 import * as Parser from 'rss-parser';
@@ -13,12 +14,7 @@ export class RssFeedService {
 
   constructor(@Inject('PUB_SUB') private pubSub: PubSubEngine) {}
 
-  async onModuleInit() {
-    setInterval(() => {
-      this.gettingNewReleases();
-    }, 10000);
-  }
-
+  @Cron('30 * * * * *')
   async gettingNewReleases() {
     const releases = await this.parser.parseURL(
       'https://www.mangaupdates.com/rss.php',
@@ -35,7 +31,7 @@ export class RssFeedService {
         item.id = SharedFunctions.getIdfromURL(r.link);
         item.group = this.getGroupFromTitle(r.title);
         item.content = r.content;
-        item.date = this.getDate(r.content);
+        item.date = r.content ? this.getDate(r.content) : new Date();
 
         this.pubSub.publish('rssFeed', { rssFeed: item });
       }
@@ -49,6 +45,10 @@ export class RssFeedService {
   }
 
   private getGroupFromTitle(s: string) {
+    if (!s) {
+      return null;
+    }
+
     const ending = s.indexOf(']');
     if (ending < 0) {
       return null;
@@ -58,6 +58,10 @@ export class RssFeedService {
   }
 
   private getDate(s: string) {
+    if (s == null) {
+      return new Date();
+    }
+
     const contentArray = s.split('<br />');
     return parse(contentArray[0], 'yyyy-MM-dd', new Date());
   }
