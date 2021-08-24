@@ -5,7 +5,7 @@ import { parse } from 'date-fns';
 import { PubSubEngine } from 'graphql-subscriptions';
 import * as Parser from 'rss-parser';
 import SharedFunctions from 'src/shared/SharedMethods';
-import { RssFeed } from './entities/rss-feed.entity';
+import { RssFeedItem } from './entities/rss-feed.entity';
 
 @Injectable()
 export class RssFeedService {
@@ -26,7 +26,7 @@ export class RssFeedService {
           return;
         }
 
-        const item = new RssFeed();
+        const item = new RssFeedItem();
         item.title = r.title;
         item.id = SharedFunctions.getIdfromURL(r.link);
         item.group = this.getGroupFromTitle(r.title);

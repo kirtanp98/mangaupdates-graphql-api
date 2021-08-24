@@ -396,7 +396,7 @@ type AuthorSearchItem {
   genres: [MangaGenre!]
 }
 
-type RssFeed {
+type RssFeedItem {
   """Id of release"""
   id: Int!
 
@@ -459,5 +459,5 @@ enum ResultType {
 }
 
 type Subscription {
-  rssFeed(seriesId: Int): RssFeed!
+  rssFeed(seriesId: Int): RssFeedItem!
 }

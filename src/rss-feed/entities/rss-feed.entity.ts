@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int, GraphQLISODateTime } from '@nestjs/graphql';
 
 @ObjectType()
-export class RssFeed {
+export class RssFeedItem {
   @Field(() => Int, { description: 'Id of release' })
   id: number;
 
