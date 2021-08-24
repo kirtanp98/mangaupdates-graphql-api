@@ -21,6 +21,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       installSubscriptionHandlers: true,
+      subscriptions: {
+        keepAlive: 10000,
+      },
       introspection: true,
       playground: true,
       context: ({ req, res }) => ({ req, res }),
